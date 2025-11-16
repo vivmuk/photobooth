@@ -17,7 +17,7 @@ export const COUPLE_STICKER_BASE64 = '';
 
 // Optional: Google Apps Script Web App endpoint to save photos to Google Drive.
 // Set this to your deployed Apps Script URL (doPost handler) or leave empty to disable.
-export const GDRIVE_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwgBuaDQkRBRRwuzfTlvd-lXRsmUmqOpfph6fVE_5DA_qFiAWdPMNrnf-Qw3GuOV1YQqw/exec';
+export const GDRIVE_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwCy4SM1Y7Gaa3dfCmIcx2ADc0pNiEb5hlbxIuQkE1wv8XsWTqhk5DHkz3qSKA7PKq5NA/exec';
 
 // Optional: Public link to the shared Google Drive folder or gallery site attendees can view.
 export const PHOTO_LOG_PUBLIC_URL = 'https://drive.google.com/drive/folders/1DarJll3p6i9iOhEFuI2WSWNcqa9kySqW?usp=sharing';
