@@ -29,8 +29,7 @@ const Gallery: React.FC<GalleryProps> = ({ onBack }) => {
       try {
         setLoading(true);
         setError(null);
-        const url = `${GDRIVE_WEBAPP_URL}?list=1&page=${p}&pageSize=${pageSize}`;
-        const res = await fetch(url, { method: 'GET' });
+        const res = await fetch(`/api/drive-list?page=${p}&pageSize=${pageSize}`, { method: 'GET' });
         if (!res.ok) {
           throw new Error(`Failed to fetch gallery: ${res.status}`);
         }

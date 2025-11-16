@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { RefreshIcon, SparklesIcon, DownloadIcon, UploadIcon } from './Icons';
 import { AIStyle, AspectRatio } from '../types';
 import { applyAIStyle } from '../services/geminiService';
-import { GOOGLE_PHOTOS_ALBUM_URL, COUPLE_STICKER_BASE64, GDRIVE_WEBAPP_URL, PHOTO_LOG_PUBLIC_URL } from '../constants';
+import { COUPLE_STICKER_BASE64, PHOTO_LOG_PUBLIC_URL } from '../constants';
 
 interface PreviewScreenProps {
   imageSrc: string;
@@ -173,17 +173,15 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
       link.click();
       document.body.removeChild(link);
       
-      // If configured, also upload to Google Drive via Apps Script Web App
-      if (GDRIVE_WEBAPP_URL) {
-        try {
-          await fetch(GDRIVE_WEBAPP_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ filename, dataUrl }),
-          });
-        } catch (e) {
-          console.warn('Drive upload failed (continuing):', e);
-        }
+      // Upload to Google Drive via Netlify Function proxy (avoids CORS)
+      try {
+        await fetch('/api/drive-upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename, dataUrl }),
+        });
+      } catch (e) {
+        console.warn('Drive upload failed (continuing):', e);
       }
 
       setShowSavedMessage(true);
@@ -209,23 +207,19 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
         <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-4 z-30 flex flex-col items-center">
             <p className="text-xl font-semibold text-blue-800 mb-3 text-center">Photo Saved to your Device!</p>
             <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-                <a href={GOOGLE_PHOTOS_ALBUM_URL} target="_blank" rel="noopener noreferrer"
-                   className="flex-1 bg-green-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-green-700 transition-colors text-center">
+                <a href={PHOTO_LOG_PUBLIC_URL || '/'} target="_blank" rel="noopener noreferrer"
+                   className="flex-1 bg-purple-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-800 transition-colors text-center">
                     <UploadIcon className="w-6 h-6" />
-                    <span>Add to Album</span>
+                    <span>View Photo Log</span>
                 </a>
                 {PHOTO_LOG_PUBLIC_URL ? (
-                  <a href={PHOTO_LOG_PUBLIC_URL} target="_blank" rel="noopener noreferrer"
-                     className="flex-1 bg-purple-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-800 transition-colors text-center">
-                      <UploadIcon className="w-6 h-6" />
-                      <span>View Photo Log</span>
-                  </a>
+                  null
                 ) : null}
                 <button onClick={onDone} className="flex-1 bg-blue-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-900 transition-colors">
                     Done
                 </button>
             </div>
-             <p className="text-sm text-gray-600 mt-3 text-center">Now, please upload your saved photo to the album!</p>
+             <p className="text-sm text-gray-600 mt-3 text-center">Your photo will also appear in the shared photo log shortly.</p>
         </div>
       ) : (
         <div className="bg-white/90 backdrop-blur-sm p-3 z-30">
