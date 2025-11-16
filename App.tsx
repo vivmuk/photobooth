@@ -3,6 +3,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import CameraView from './components/CameraView';
 import PreviewScreen from './components/PreviewScreen';
 import ConsentPopup from './components/ConsentPopup';
+import Gallery from './components/Gallery';
 import type { View, AspectRatio } from './types';
 
 const getInitialAspectRatio = (): AspectRatio => {
@@ -66,7 +67,7 @@ const App: React.FC = () => {
   const renderView = () => {
     switch (view) {
       case 'welcome':
-        return <WelcomeScreen onStart={handleStart} onPhotoUpload={handlePhotoUpload} />;
+        return <WelcomeScreen onStart={handleStart} onPhotoUpload={handlePhotoUpload} onViewGallery={() => setView('gallery')} />;
       case 'camera':
         return <CameraView 
                   onPhotoCapture={handlePhotoCapture} 
@@ -84,6 +85,8 @@ const App: React.FC = () => {
         // Fallback to camera if no image
         setView('camera');
         return null;
+      case 'gallery':
+        return <Gallery onBack={() => setView('welcome')} />;
       default:
         return <WelcomeScreen onStart={handleStart} onPhotoUpload={handlePhotoUpload} />;
     }
