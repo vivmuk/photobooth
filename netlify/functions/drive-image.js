@@ -11,18 +11,27 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers: corsHeaders, body: 'Method Not Allowed' };
   }
   try {
-    const scriptUrl =
-      process.env.GDRIVE_WEBAPP_URL ||
-      'https://script.google.com/macros/s/AKfycbwCy4SM1Y7Gaa3dfCmIcx2ADc0pNiEb5hlbxIuQkE1wv8XsWTqhk5DHkz3qSKA7PKq5NA/exec';
     const id = (event.queryStringParameters && event.queryStringParameters.id) || '';
     if (!id) {
       return { statusCode: 400, headers: corsHeaders, body: 'Missing id' };
     }
-    // Ask Apps Script to return the image content directly for the file id
-    const url = `${scriptUrl}?image=1&id=${encodeURIComponent(id)}`;
-    const res = await fetch(url, { method: 'GET' });
+    // Fetch directly from Google Drive viewer endpoint server-side
+    const url = `https://drive.google.com/uc?export=view&id=${encodeURIComponent(id)}`;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        // A basic UA can help avoid some anti-bot heuristics
+        'User-Agent': 'Mozilla/5.0 NetlifyFunctionImageProxy',
+        'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+        'Referer': 'https://rajandmanali.netlify.app/',
+      },
+    });
     // Pass-through content-type (expecting image/*)
-    const contentType = res.headers.get('content-type') || 'image/jpeg';
+    let contentType = res.headers.get('content-type') || 'image/jpeg';
+    // Some Drive responses return text/html with an <img>; try to coerce
+    if (contentType.includes('text/html')) {
+      contentType = 'image/jpeg';
+    }
     const arrayBuffer = await res.arrayBuffer();
     return {
       statusCode: res.status,
