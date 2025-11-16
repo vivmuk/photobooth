@@ -65,47 +65,17 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
           // 1. Draw the photo
           ctx.drawImage(mainImage, 0, 0);
 
-          // 2. Draw Emojis
-          const emojis = [
-            { char: '🧸', x: 0.1, y: 0.25, size: 0.1, rotation: -12, alpha: 0.8 },
-            { char: '🍼', x: 0.9, y: 0.33, size: 0.12, rotation: 15, alpha: 0.8 },
-            { char: '👣', x: 0.12, y: 0.5, size: 0.1, rotation: 10, alpha: 0.8 },
-            { char: '👶', x: 0.9, y: 0.6, size: 0.08, rotation: -15, alpha: 0.8 },
-          ];
+          // 2. (Removed emojis per request)
 
-          emojis.forEach(emoji => {
-            ctx.save();
-            ctx.font = `${canvas.width * emoji.size}px sans-serif`;
-            ctx.globalAlpha = emoji.alpha;
-            const textMetrics = ctx.measureText(emoji.char);
-            const tx = canvas.width * emoji.x - textMetrics.width / 2;
-            const ty = canvas.height * emoji.y;
-            ctx.translate(tx, ty);
-            ctx.rotate(emoji.rotation * Math.PI / 180);
-            ctx.fillText(emoji.char, 0, 0);
-            ctx.restore();
-          });
-
-          // 3. Draw the couple sticker if it loaded
+          // 3. Draw the couple sticker if it loaded (placed near the title)
           if (stickerImage && stickerImage.complete && stickerImage.naturalWidth !== 0) {
-            const stickerSize = canvas.width * 0.18;
-            const stickerX = canvas.width / 2 - stickerSize / 2;
-            const stickerY = canvas.height - (canvas.height * 0.22);
+            const stickerSize = canvas.width * 0.12;
+            const stickerY = canvas.height - (canvas.height * 0.24);
+            const stickerX = canvas.width * 0.12; // left of title
             
             ctx.save();
-            ctx.beginPath();
-            ctx.arc(stickerX + stickerSize / 2, stickerY + stickerSize / 2, stickerSize / 2, 0, Math.PI * 2, true);
-            ctx.closePath();
-            ctx.clip();
             ctx.drawImage(stickerImage, stickerX, stickerY, stickerSize, stickerSize);
             ctx.restore();
-            
-            ctx.beginPath();
-            ctx.arc(stickerX + stickerSize / 2, stickerY + stickerSize / 2, stickerSize / 2, 0, Math.PI * 2, true);
-            ctx.lineWidth = canvas.width * 0.01;
-            ctx.strokeStyle = 'white';
-            ctx.stroke();
-            ctx.closePath();
           }
 
           // 4. Draw the frame text
@@ -115,16 +85,21 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
           const titleSize = canvas.width * 0.07;
           const dateSize = canvas.width * 0.045;
 
-          ctx.shadowColor = 'rgba(49, 130, 206, 0.7)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
+          // Baby-blue glow with contrasting inner stroke
           ctx.fillStyle = 'white';
+          ctx.strokeStyle = 'rgba(59, 130, 246, 0.9)'; // baby blue stroke
+          ctx.lineWidth = canvas.width * 0.01;
+          ctx.shadowColor = 'rgba(147, 197, 253, 0.9)'; // soft glow blue-200
+          ctx.shadowBlur = 28;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
 
           ctx.font = `bold ${titleSize}px 'Pacifico', cursive`;
+          ctx.strokeText('Manali & Raj Baby Shower', canvas.width / 2, canvas.height - bottomPadding - dateSize * 1.5);
           ctx.fillText('Manali & Raj Baby Shower', canvas.width / 2, canvas.height - bottomPadding - dateSize * 1.5);
 
           ctx.font = `${dateSize}px 'Pacifico', cursive`;
+          ctx.strokeText('11.23.2025', canvas.width / 2, canvas.height - bottomPadding);
           ctx.fillText('11.23.2025', canvas.width / 2, canvas.height - bottomPadding);
           
           ctx.shadowColor = 'transparent'; // Reset shadow

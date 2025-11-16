@@ -4,11 +4,6 @@
   functions = "netlify/functions"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
   from = "/api/drive-upload"
   to = "/.netlify/functions/drive-upload"
   status = 200
@@ -19,4 +14,15 @@
   to = "/.netlify/functions/drive-list"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
