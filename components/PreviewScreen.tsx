@@ -9,6 +9,8 @@ interface PreviewScreenProps {
   onRetake: () => void;
   onDone: () => void;
   aspectRatio: AspectRatio;
+  onGoHome?: () => void;
+  onViewGallery?: () => void;
 }
 
 const LoadingSpinner: React.FC = () => (
@@ -18,7 +20,7 @@ const LoadingSpinner: React.FC = () => (
     </div>
 );
 
-const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDone, aspectRatio }) => {
+const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDone, aspectRatio, onGoHome, onViewGallery }) => {
   const [currentImage, setCurrentImage] = useState(imageSrc);
   const [isLoading, setIsLoading] = useState(false);
   const [showSavedMessage, setShowSavedMessage] = useState(false);
@@ -136,19 +138,11 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
 
       // Redraw one last time to ensure highest quality before saving
       await drawImageWithFrame(canvas, currentImage);
-      
+
       const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
       const filename = `Manali_Raj_Baby_Shower_${new Date().getTime()}.jpg`;
 
-      // Trigger download
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Upload to Google Drive via Netlify Function proxy (avoids CORS)
+      // 1) Upload to Google Drive first (so it can't be interrupted)
       try {
         // Create a smaller upload to stay under serverless limits
         const maxSide = 1600;
@@ -166,14 +160,25 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
         } else {
           uploadDataUrl = canvas.toDataURL('image/jpeg', 0.85);
         }
-        await fetch('/api/drive-upload', {
+        const res = await fetch('/api/drive-upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename, dataUrl: uploadDataUrl }),
         });
+        if (!res.ok) {
+          console.warn('Drive upload returned non-OK:', res.status);
+        }
       } catch (e) {
         console.warn('Drive upload failed (continuing):', e);
       }
+
+      // 2) Then trigger local download
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
       setShowSavedMessage(true);
     } catch (error) {
