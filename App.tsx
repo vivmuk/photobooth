@@ -96,9 +96,7 @@ const App: React.FC = () => {
     <div className="h-screen w-screen bg-yellow-300 text-blue-800 overflow-hidden relative">
       {renderView()}
       {showConsent && <ConsentPopup onConsent={handleConsent} />}
-      <footer className="absolute bottom-1 right-2 text-xs text-gray-500/80 z-50 pointer-events-none">
-        App created by Amy & Vivek
-      </footer>
+      
     </div>
   );
 };
