@@ -7,7 +7,7 @@ type DriveItem = {
   createdTime?: string;
 };
 
-const idToViewUrl = (id: string) => `https://drive.google.com/uc?export=view&id=${id}`;
+const idToViewUrl = (id: string) => `/api/drive-image?id=${id}`; // proxy via Netlify to avoid third-party blocking
 const idToOpenUrl = (id: string) => `https://drive.google.com/file/d/${id}/view`;
 
 interface GalleryProps {

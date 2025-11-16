@@ -16,6 +16,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/drive-image"
+  to = "/.netlify/functions/drive-image"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
