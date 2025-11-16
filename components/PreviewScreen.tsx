@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { RefreshIcon, SparklesIcon, DownloadIcon, UploadIcon } from './Icons';
 import { AIStyle, AspectRatio } from '../types';
 import { applyAIStyle } from '../services/geminiService';
-import { GOOGLE_PHOTOS_ALBUM_URL, COUPLE_STICKER_BASE64 } from '../constants';
+import { GOOGLE_PHOTOS_ALBUM_URL, COUPLE_STICKER_BASE64, GDRIVE_WEBAPP_URL, PHOTO_LOG_PUBLIC_URL } from '../constants';
 
 interface PreviewScreenProps {
   imageSrc: string;
@@ -173,6 +173,19 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
       link.click();
       document.body.removeChild(link);
       
+      // If configured, also upload to Google Drive via Apps Script Web App
+      if (GDRIVE_WEBAPP_URL) {
+        try {
+          await fetch(GDRIVE_WEBAPP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename, dataUrl }),
+          });
+        } catch (e) {
+          console.warn('Drive upload failed (continuing):', e);
+        }
+      }
+
       setShowSavedMessage(true);
     } catch (error) {
       console.error('Failed to save image:', error);
@@ -201,6 +214,13 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
                     <UploadIcon className="w-6 h-6" />
                     <span>Add to Album</span>
                 </a>
+                {PHOTO_LOG_PUBLIC_URL ? (
+                  <a href={PHOTO_LOG_PUBLIC_URL} target="_blank" rel="noopener noreferrer"
+                     className="flex-1 bg-purple-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-800 transition-colors text-center">
+                      <UploadIcon className="w-6 h-6" />
+                      <span>View Photo Log</span>
+                  </a>
+                ) : null}
                 <button onClick={onDone} className="flex-1 bg-blue-800 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-900 transition-colors">
                     Done
                 </button>

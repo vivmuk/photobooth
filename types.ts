@@ -5,7 +5,7 @@ export enum AIStyle {
   WATERCOLOR = 'Watercolor Whimsy',
   TWINKLE_STAR = 'Twinkle Starry Night',
   BOSTON_WATERCOLOR = 'Boston Watercolor',
-  POP_ART = 'Pop Art',
+  CARICATURE = 'Streetside Caricature',
   PENCIL_SKETCH = 'Pencil Sketch',
   CARTOON = 'Cartoon',
 }
