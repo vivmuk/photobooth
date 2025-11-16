@@ -6,6 +6,6 @@ export enum AIStyle {
   TWINKLE_STAR = 'Twinkle Starry Night',
   BOSTON_WATERCOLOR = 'Boston Watercolor',
   CARICATURE = 'Streetside Caricature',
-  PENCIL_SKETCH = 'Pencil Sketch',
+  PENCIL_SKETCH = 'Studio Ghibli',
   CARTOON = 'Cartoon',
 }
