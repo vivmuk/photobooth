@@ -150,10 +150,26 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
       
       // Upload to Google Drive via Netlify Function proxy (avoids CORS)
       try {
+        // Create a smaller upload to stay under serverless limits
+        const maxSide = 1600;
+        const scale = Math.min(1, maxSide / Math.max(canvas.width, canvas.height));
+        let uploadDataUrl = dataUrl;
+        if (scale < 1) {
+          const off = document.createElement('canvas');
+          off.width = Math.round(canvas.width * scale);
+          off.height = Math.round(canvas.height * scale);
+          const octx = off.getContext('2d');
+          if (octx) {
+            octx.drawImage(canvas, 0, 0, off.width, off.height);
+            uploadDataUrl = off.toDataURL('image/jpeg', 0.85);
+          }
+        } else {
+          uploadDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        }
         await fetch('/api/drive-upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename, dataUrl }),
+          body: JSON.stringify({ filename, dataUrl: uploadDataUrl }),
         });
       } catch (e) {
         console.warn('Drive upload failed (continuing):', e);
