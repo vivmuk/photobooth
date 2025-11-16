@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GDRIVE_WEBAPP_URL } from '../constants';
 
 type DriveItem = {
@@ -18,22 +18,36 @@ const Gallery: React.FC<GalleryProps> = ({ onBack }) => {
   const [items, setItems] = useState<DriveItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState<number>(0);
+  const [done, setDone] = useState<boolean>(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const pageSize = 24;
 
   useEffect(() => {
     let cancelled = false;
-    async function load() {
+    async function loadPage(p: number) {
       try {
         setLoading(true);
         setError(null);
-        // Assumes the Apps Script exposes GET that returns { files: [{id,name,createdTime}] }
-        const url = `${GDRIVE_WEBAPP_URL}?list=1`;
+        const url = `${GDRIVE_WEBAPP_URL}?list=1&page=${p}&pageSize=${pageSize}`;
         const res = await fetch(url, { method: 'GET' });
         if (!res.ok) {
           throw new Error(`Failed to fetch gallery: ${res.status}`);
         }
         const data = await res.json();
+        const newItems = (data.files || []) as DriveItem[];
         if (!cancelled) {
-          setItems((data.files || []) as DriveItem[]);
+          setItems((prev) => {
+            const existing = new Set(prev.map((x) => x.id));
+            const merged = [...prev];
+            for (const it of newItems) {
+              if (!existing.has(it.id)) merged.push(it);
+            }
+            return merged;
+          });
+          if (!newItems.length || newItems.length < pageSize) {
+            setDone(true);
+          }
         }
       } catch (e: any) {
         if (!cancelled) setError(e?.message || 'Unknown error');
@@ -41,11 +55,24 @@ const Gallery: React.FC<GalleryProps> = ({ onBack }) => {
         if (!cancelled) setLoading(false);
       }
     }
-    load();
+    loadPage(page);
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [page]);
+
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+    const el = sentinelRef.current;
+    const io = new IntersectionObserver((entries) => {
+      const first = entries[0];
+      if (first.isIntersecting && !loading && !done) {
+        setPage((p) => p + 1);
+      }
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [loading, done]);
 
   return (
     <div className="w-full h-full flex flex-col bg-yellow-200">
@@ -58,11 +85,9 @@ const Gallery: React.FC<GalleryProps> = ({ onBack }) => {
           Back
         </button>
       </div>
-      {loading ? (
-        <div className="flex-1 flex items-center justify-center text-blue-800">Loading…</div>
-      ) : error ? (
+      {error ? (
         <div className="flex-1 flex items-center justify-center text-red-700">Error: {error}</div>
-      ) : items.length === 0 ? (
+      ) : items.length === 0 && !loading ? (
         <div className="flex-1 flex items-center justify-center text-blue-800">No photos yet. Be the first!</div>
       ) : (
         <div className="flex-1 overflow-auto p-4">
@@ -84,6 +109,9 @@ const Gallery: React.FC<GalleryProps> = ({ onBack }) => {
                 <div className="p-2 text-xs text-blue-900 truncate">{it.name}</div>
               </a>
             ))}
+          </div>
+          <div ref={sentinelRef} className="py-6 text-center text-sm text-blue-800">
+            {done ? 'All photos loaded' : (loading ? 'Loading…' : 'Scroll for more')}
           </div>
         </div>
       )}
