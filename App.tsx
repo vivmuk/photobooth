@@ -94,10 +94,10 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen bg-gradient-to-br from-blue-500 via-blue-400 to-blue-600 text-blue-900 overflow-hidden relative">
-      {/* Background Ambience - Predominantly Blue with Neon Violet Accent */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/50 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-violet-500/40 rounded-full blur-[120px] pointer-events-none" />
+    <div className="h-screen w-screen bg-gray-900 text-white overflow-hidden relative">
+      {/* Background Ambience - Blue and Violet Accents on Dark */}
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-violet-500/20 rounded-full blur-[120px] pointer-events-none" />
       
       {renderView()}
       {showConsent && <ConsentPopup onConsent={handleConsent} />}

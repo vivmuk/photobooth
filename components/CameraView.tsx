@@ -111,7 +111,7 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-blue-400 to-blue-600">
+    <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gray-900">
       {/* Header with Home Button */}
       <div className="w-full max-w-md flex justify-between items-center mb-4 relative z-10">
         <button 
