@@ -111,19 +111,19 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gray-900">
-      {/* Header with Home Button */}
-      <div className="w-full max-w-md flex justify-between items-center mb-4 relative z-10">
+    <div className={`w-full h-full flex items-center justify-center p-2 md:p-4 bg-gray-900 ${isPortrait ? 'flex-col' : 'flex-row'}`}>
+      {/* Header with Home Button - Positioned based on orientation */}
+      <div className={`absolute ${isPortrait ? 'top-2 left-2' : 'top-2 left-2'} z-30`}>
         <button 
           onClick={onHome}
-          className="bg-white/10 hover:bg-white/20 backdrop-blur px-4 py-2 rounded-full text-sm font-medium text-white transition"
+          className="bg-white/10 hover:bg-white/20 backdrop-blur px-3 py-1.5 rounded-full text-xs md:text-sm font-medium text-white transition"
         >
           Home
         </button>
       </div>
 
-      {/* Camera Preview Container */}
-      <div className={`relative w-full max-w-md bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 ${isPortrait ? 'aspect-[9/16]' : 'aspect-[16/9]'}`}>
+      {/* Camera Preview Container - Larger in landscape */}
+      <div className={`relative bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 ${isPortrait ? 'w-full max-w-md aspect-[9/16]' : 'w-full max-w-4xl aspect-[16/9]'}`}>
         <video
           ref={videoRef}
           autoPlay
@@ -133,28 +133,40 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
         />
         <FrameOverlay />
         
-        {/* Banner - Raj and Manali Baby Shower Photo Booth */}
+        {/* Banner - Compact and responsive */}
         <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-r from-blue-600/90 via-violet-600/90 to-blue-600/90 backdrop-blur-sm border-b border-white/20">
-          <div className="px-4 py-2 text-center">
-            <p className="text-white font-bold text-sm md:text-base">Raj and Manali Baby Shower Photo Booth</p>
+          <div className={`text-center ${isPortrait ? 'px-2 py-1' : 'px-3 py-1.5'}`}>
+            <p className={`text-white font-bold ${isPortrait ? 'text-xs' : 'text-sm'}`}>Raj and Manali Baby Shower Photo Booth</p>
           </div>
         </div>
         
-        {/* LIVE Indicator */}
-        <div className="absolute top-14 right-4 z-20 bg-black/50 px-3 py-1 rounded-full text-xs font-bold text-violet-400 backdrop-blur-md border border-violet-400/30">
+        {/* LIVE Indicator - Positioned based on banner height */}
+        <div className={`absolute z-20 bg-black/50 px-2 py-1 rounded-full text-xs font-bold text-violet-400 backdrop-blur-md border border-violet-400/30 ${isPortrait ? 'top-10 right-2' : 'top-12 right-3'}`}>
           LIVE
         </div>
         
-        {/* Shutter Button - Centered at Bottom */}
-        <div className="absolute bottom-8 left-0 right-0 flex justify-center items-center z-20">
-          <button
-            onClick={handleCapture}
-            className="w-20 h-20 rounded-full border-4 border-white bg-white/20 backdrop-blur-sm hover:bg-violet-500 hover:border-violet-500 transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-[0_0_30px_rgba(139,92,246,0.7)] flex items-center justify-center group"
-            aria-label="Take Photo"
-          >
-            <div className="w-16 h-16 rounded-full bg-white group-hover:bg-violet-300"></div>
-          </button>
-        </div>
+        {/* Shutter Button - Centered at Bottom in Portrait, Right Side in Landscape */}
+        {isPortrait ? (
+          <div className="absolute bottom-4 md:bottom-8 left-0 right-0 flex justify-center items-center z-20">
+            <button
+              onClick={handleCapture}
+              className="w-16 h-16 rounded-full border-4 border-white bg-white/20 backdrop-blur-sm hover:bg-violet-500 hover:border-violet-500 transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-[0_0_30px_rgba(139,92,246,0.7)] flex items-center justify-center group"
+              aria-label="Take Photo"
+            >
+              <div className="w-12 h-12 rounded-full bg-white group-hover:bg-violet-300"></div>
+            </button>
+          </div>
+        ) : (
+          <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20">
+            <button
+              onClick={handleCapture}
+              className="w-20 h-20 rounded-full border-4 border-white bg-white/20 backdrop-blur-sm hover:bg-violet-500 hover:border-violet-500 transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-[0_0_30px_rgba(139,92,246,0.7)] flex items-center justify-center group"
+              aria-label="Take Photo"
+            >
+              <div className="w-16 h-16 rounded-full bg-white group-hover:bg-violet-300"></div>
+            </button>
+          </div>
+        )}
         
         {/* Decorative framing */}
         <div className="absolute inset-0 border-[1px] border-white/10 pointer-events-none"></div>
