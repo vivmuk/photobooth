@@ -28,13 +28,6 @@ const FrameOverlay: React.FC<FrameOverlayProps> = ({ interactive = true }) => {
       <Star className="top-10 right-10 transform -rotate-12" />
       <Star className="bottom-28 left-8 transform rotate-6 scale-75" />
       <Star className="bottom-40 right-12 transform -rotate-6 scale-90" />
-      
-      {/* New Emojis */}
-      <div className="absolute top-1/4 left-4 text-4xl transform -rotate-12 opacity-80">🧸</div>
-      <div className="absolute top-1/3 right-5 text-5xl transform rotate-15 opacity-80">🍼</div>
-      <div className="absolute bottom-1/2 left-5 text-4xl transform rotate-10 opacity-80">👣</div>
-      <div className="absolute bottom-[40%] right-4 text-3xl transform -rotate-15 opacity-80">👶</div>
-
 
       {/* Frame Text Container */}
       <div className="absolute bottom-0 left-0 right-0 p-4 pb-28 md:pb-24 bg-gradient-to-t from-blue-200/50 to-transparent">
