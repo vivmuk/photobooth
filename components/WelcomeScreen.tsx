@@ -28,7 +28,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onPhotoUpload, o
   };
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center p-8 text-center bg-gray-900">
+    <div className="relative w-full h-full flex flex-col items-center justify-center p-8 text-center" style={{ backgroundColor: '#0a1929' }}>
       {/* Background Ambience - Blue Neon Accents */}
       <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-[120px] pointer-events-none" />
