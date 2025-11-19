@@ -94,7 +94,7 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
   }
 
   return (
-    <div className="w-full h-full flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-pink-50">
+    <div className="w-full h-full flex items-center justify-center p-4 bg-gradient-to-br from-blue-200 to-yellow-100">
       <div className="relative w-full max-w-md aspect-[3/4] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20">
         <video
           ref={videoRef}
@@ -106,7 +106,7 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
         <FrameOverlay />
         
         {/* LIVE Indicator */}
-        <div className="absolute top-4 right-4 z-20 bg-black/50 px-3 py-1 rounded-full text-xs font-bold text-blue-300 backdrop-blur-md border border-blue-300/30">
+        <div className="absolute top-4 right-4 z-20 bg-black/50 px-3 py-1 rounded-full text-xs font-bold text-blue-400 backdrop-blur-md border border-blue-400/30">
           LIVE
         </div>
         
@@ -114,10 +114,10 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
         <div className="absolute bottom-8 left-0 right-0 flex justify-center items-center z-20">
           <button
             onClick={handleCapture}
-            className="w-20 h-20 rounded-full border-4 border-white bg-white/20 backdrop-blur-sm hover:bg-blue-400 hover:border-blue-400 transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-[0_0_30px_rgba(59,130,246,0.6)] flex items-center justify-center group"
+            className="w-20 h-20 rounded-full border-4 border-white bg-white/20 backdrop-blur-sm hover:bg-blue-500 hover:border-blue-500 transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-[0_0_30px_rgba(59,130,246,0.7)] flex items-center justify-center group"
             aria-label="Take Photo"
           >
-            <div className="w-16 h-16 rounded-full bg-white group-hover:bg-white/90"></div>
+            <div className="w-16 h-16 rounded-full bg-white group-hover:bg-yellow-200"></div>
           </button>
         </div>
         
