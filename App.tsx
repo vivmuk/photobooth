@@ -72,6 +72,7 @@ const App: React.FC = () => {
         return <CameraView 
                   onPhotoCapture={handlePhotoCapture} 
                   onAspectRatioChange={setAspectRatio}
+                  onHome={() => setView('welcome')}
                 />;
       case 'preview':
         if (capturedImage) {

@@ -5,9 +5,10 @@ import { AspectRatio } from '../types';
 interface CameraViewProps {
   onPhotoCapture: (image: string) => void;
   onAspectRatioChange: (ratio: AspectRatio) => void;
+  onHome: () => void;
 }
 
-const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioChange }) => {
+const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioChange, onHome }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPortrait, setIsPortrait] = useState(window.innerHeight > window.innerWidth);
@@ -110,7 +111,18 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
   }
 
   return (
-    <div className="w-full h-full flex items-center justify-center p-4 bg-gradient-to-br from-blue-400 to-blue-600">
+    <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-blue-400 to-blue-600">
+      {/* Header with Home Button */}
+      <div className="w-full max-w-md flex justify-between items-center mb-4 relative z-10">
+        <button 
+          onClick={onHome}
+          className="bg-white/10 hover:bg-white/20 backdrop-blur px-4 py-2 rounded-full text-sm font-medium text-white transition"
+        >
+          Home
+        </button>
+      </div>
+
+      {/* Camera Preview Container */}
       <div className={`relative w-full max-w-md bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 ${isPortrait ? 'aspect-[9/16]' : 'aspect-[16/9]'}`}>
         <video
           ref={videoRef}
@@ -121,8 +133,15 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
         />
         <FrameOverlay />
         
+        {/* Banner - Raj and Manali Baby Shower Photo Booth */}
+        <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-r from-blue-600/90 via-violet-600/90 to-blue-600/90 backdrop-blur-sm border-b border-white/20">
+          <div className="px-4 py-2 text-center">
+            <p className="text-white font-bold text-sm md:text-base">Raj and Manali Baby Shower Photo Booth</p>
+          </div>
+        </div>
+        
         {/* LIVE Indicator */}
-        <div className="absolute top-4 right-4 z-20 bg-black/50 px-3 py-1 rounded-full text-xs font-bold text-violet-400 backdrop-blur-md border border-violet-400/30">
+        <div className="absolute top-14 right-4 z-20 bg-black/50 px-3 py-1 rounded-full text-xs font-bold text-violet-400 backdrop-blur-md border border-violet-400/30">
           LIVE
         </div>
         
