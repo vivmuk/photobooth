@@ -13,16 +13,42 @@ interface PreviewScreenProps {
   onViewGallery?: () => void;
 }
 
-const LoadingSpinner: React.FC = () => (
-    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-40">
-        <div className="w-16 h-16 border-4 border-t-4 border-t-blue-400 border-gray-200 rounded-full animate-spin"></div>
-        <p className="text-white mt-4 text-lg">Applying AI magic...</p>
+interface LoadingSpinnerProps {
+  message?: string;
+  isSecret?: boolean;
+  progress?: number;
+}
+
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ message, isSecret, progress }) => {
+  const displayMessage = isSecret 
+    ? "🎉 You found the secret preset! Creating magic..."
+    : (message || "Applying AI magic...");
+  
+  return (
+    <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center z-40 backdrop-blur-sm">
+      <div className="w-20 h-20 border-4 border-t-4 border-t-blue-400 border-gray-200 rounded-full animate-spin mb-4"></div>
+      <p className="text-white mt-2 text-base sm:text-lg font-semibold text-center px-4">{displayMessage}</p>
+      {progress !== undefined && (
+        <div className="mt-4 w-64 sm:w-80 max-w-[80%]">
+          <div className="bg-gray-700 rounded-full h-3 overflow-hidden">
+            <div 
+              className="bg-gradient-to-r from-blue-400 to-purple-500 h-full rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+            ></div>
+          </div>
+          <p className="text-white text-sm sm:text-base mt-2 text-center font-medium">{Math.round(progress)}%</p>
+        </div>
+      )}
     </div>
-);
+  );
+};
 
 const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDone, aspectRatio, onGoHome, onViewGallery }) => {
   const [currentImage, setCurrentImage] = useState(imageSrc);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState<string | undefined>();
+  const [isSecretLoading, setIsSecretLoading] = useState(false);
+  const [progress, setProgress] = useState<number>(0);
   const [showSavedMessage, setShowSavedMessage] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -122,18 +148,49 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
 
   const handleApplyStyle = useCallback(async (style: AIStyle) => {
     setIsLoading(true);
+    setIsSecretLoading(false);
+    setLoadingMessage(undefined);
+    setProgress(0);
+    
+    // Simulate progress for better UX (since API is slow)
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 90) return prev; // Don't go to 100 until done
+        return prev + Math.random() * 10;
+      });
+    }, 500);
+    
     try {
       const styledImage = await applyAIStyle(imageSrc, style); // Always style the original
-      setCurrentImage(styledImage);
+      clearInterval(progressInterval);
+      setProgress(100);
+      setTimeout(() => {
+        setCurrentImage(styledImage);
+        setIsLoading(false);
+        setProgress(0);
+      }, 300);
     } catch (error) {
-      alert("Sorry, we couldn't apply the style. Please try another one or save the original.");
-    } finally {
+      clearInterval(progressInterval);
+      setProgress(0);
       setIsLoading(false);
+      alert("Sorry, we couldn't apply the style. Please try another one or save the original.");
     }
   }, [imageSrc]);
 
   const handleSecretButton = useCallback(async () => {
     setIsLoading(true);
+    setIsSecretLoading(true);
+    setLoadingMessage(undefined);
+    setProgress(0);
+    
+    // Simulate progress for secret feature (takes ~20 seconds)
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 95) return prev; // Don't go to 100 until done
+        return prev + Math.random() * 3; // Slower progress for secret feature
+      });
+    }, 400);
+    
     try {
       // Use the Venice API directly with the secret prompt
       const { base64 } = (() => {
@@ -166,12 +223,22 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
       }
       const base64Result = btoa(binary);
       const styledImage = `data:image/png;base64,${base64Result}`;
-      setCurrentImage(styledImage);
+      
+      clearInterval(progressInterval);
+      setProgress(100);
+      setTimeout(() => {
+        setCurrentImage(styledImage);
+        setIsLoading(false);
+        setIsSecretLoading(false);
+        setProgress(0);
+      }, 300);
     } catch (error) {
+      clearInterval(progressInterval);
+      setProgress(0);
+      setIsLoading(false);
+      setIsSecretLoading(false);
       console.error("Secret feature error:", error);
       alert("Sorry, the secret feature couldn't be applied. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   }, [imageSrc]);
   
@@ -237,7 +304,17 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
 
   return (
     <div className="w-full h-full relative flex flex-col bg-gray-900">
-      {isLoading && <LoadingSpinner />}
+      {/* Home Button - Stands out on preview screen */}
+      {onGoHome && (
+        <button
+          onClick={onGoHome}
+          className="absolute top-2 sm:top-3 left-2 sm:left-3 z-50 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-2 px-4 sm:py-2.5 sm:px-5 rounded-full text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-200 backdrop-blur-sm border-2 border-white/30"
+        >
+          🏠 Home
+        </button>
+      )}
+      
+      {isLoading && <LoadingSpinner message={loadingMessage} isSecret={isSecretLoading} progress={progress} />}
       
       <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden p-1 sm:p-2 bg-gray-100">
          <div className={`w-full max-w-full max-h-full relative shadow-2xl bg-white rounded-lg p-1 sm:p-2 ${aspectRatio === '16:9' ? 'aspect-[16/9]' : 'aspect-[9/16]'}`}>
@@ -291,13 +368,13 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
             <div className="w-16 sm:w-20"></div> {/* Spacer for balance */}
           </div>
           
-          {/* Preset buttons with material design - more rounded */}
-          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+          {/* Preset buttons with material design - bigger and more rounded */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-2.5 mb-2 sm:mb-3">
             {styleOptions.map(style => (
               <button 
                 key={style} 
                 onClick={() => handleApplyStyle(style)} 
-                className="bg-blue-100 text-blue-800 text-[10px] sm:text-xs font-semibold py-2 sm:py-2.5 px-1.5 sm:px-2 rounded-2xl hover:bg-blue-200 active:scale-95 transition-all duration-200 text-center shadow-sm hover:shadow-md"
+                className="bg-blue-100 text-blue-800 text-xs sm:text-sm font-semibold py-3 sm:py-3.5 px-2 sm:px-3 rounded-2xl hover:bg-blue-200 active:scale-95 transition-all duration-200 text-center shadow-sm hover:shadow-md"
                 style={{ 
                   borderRadius: '16px',
                   touchAction: 'manipulation'

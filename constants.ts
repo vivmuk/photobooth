@@ -12,8 +12,6 @@ export const AI_STYLE_PROMPTS: Record<AIStyle, string> = {
 // Secret feature prompt
 export const SECRET_TRUMP_PROMPT = "Add Donald Trump standing behind all the people in this photo. He should be holding a sign up high above his head. The sign must say 'Make Delaware Great Again' in bold red, white, and blue letters. Make Trump clearly visible in the background.";
 
-export const GOOGLE_PHOTOS_ALBUM_URL = 'https://photos.app.goo.gl/Az1AYNjNWY8h1LrM8';
-
 // 200x200px PNG sticker of the couple
 // The sticker is temporarily disabled until a valid base64 string is provided.
 export const COUPLE_STICKER_BASE64 = '';

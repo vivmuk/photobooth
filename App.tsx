@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import WelcomeScreen from './components/WelcomeScreen';
 import CameraView from './components/CameraView';
 import PreviewScreen from './components/PreviewScreen';
-import ConsentPopup from './components/ConsentPopup';
 import Gallery from './components/Gallery';
 import type { View, AspectRatio } from './types';
 
@@ -13,19 +12,12 @@ const getInitialAspectRatio = (): AspectRatio => {
 const App: React.FC = () => {
   const [view, setView] = useState<View>('welcome');
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [showConsent, setShowConsent] = useState<boolean>(false);
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>(getInitialAspectRatio());
   const [imageSource, setImageSource] = useState<'camera' | 'upload' | null>(null);
 
   const handleStart = () => {
-    setShowConsent(true);
-  };
-  
-  const handleConsent = (agreed: boolean) => {
-    setShowConsent(false);
-    if (agreed) {
-      setView('camera');
-    }
+    // Go directly to camera - browser will prompt for permission
+    setView('camera');
   };
 
   const handlePhotoCapture = useCallback((image: string) => {
@@ -81,6 +73,7 @@ const App: React.FC = () => {
                     onRetake={handleRetake} 
                     onDone={handleDone}
                     aspectRatio={aspectRatio}
+                    onGoHome={() => setView('welcome')}
                   />;
         }
         // Fallback to camera if no image
@@ -100,7 +93,6 @@ const App: React.FC = () => {
       <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-violet-500/20 rounded-full blur-[120px] pointer-events-none" />
       
       {renderView()}
-      {showConsent && <ConsentPopup onConsent={handleConsent} />}
     </div>
   );
 };
