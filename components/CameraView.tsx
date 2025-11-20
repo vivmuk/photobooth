@@ -116,11 +116,11 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
 
   return (
     <div className={`w-full h-full flex items-center justify-center p-2 md:p-4 bg-gray-900 ${isPortrait ? 'flex-col' : 'flex-row'}`}>
-      {/* Header with Home Button - Positioned based on orientation */}
-      <div className={`absolute ${isPortrait ? 'top-2 left-2' : 'top-2 left-2'} z-30`}>
+      {/* Header with Home Button - Moved down to avoid blending with banner */}
+      <div className={`absolute ${isPortrait ? 'top-12 left-2' : 'top-14 left-2'} z-30`}>
         <button 
           onClick={onHome}
-          className="bg-white/10 hover:bg-white/20 backdrop-blur px-3 py-1.5 rounded-full text-xs md:text-sm font-medium text-white transition"
+          className="bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1.5 rounded-full text-xs md:text-sm font-medium text-white shadow-lg transition"
         >
           Home
         </button>
@@ -144,8 +144,8 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
           </div>
         </div>
         
-        {/* LIVE Indicator - Positioned based on banner height */}
-        <div className={`absolute z-20 bg-black/50 px-2 py-1 rounded-full text-xs font-bold text-violet-400 backdrop-blur-md border border-violet-400/30 ${isPortrait ? 'top-10 right-2' : 'top-12 right-3'}`}>
+        {/* LIVE Indicator - Red background with white text */}
+        <div className={`absolute z-20 bg-red-600 px-2 py-1 rounded-full text-xs font-bold text-white backdrop-blur-md border border-red-500/50 ${isPortrait ? 'top-10 right-2' : 'top-12 right-3'}`}>
           LIVE
         </div>
         

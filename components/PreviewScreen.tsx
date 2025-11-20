@@ -239,8 +239,8 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
     <div className="w-full h-full relative flex flex-col bg-gray-900">
       {isLoading && <LoadingSpinner />}
       
-      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden p-2 bg-gray-100">
-         <div className={`w-full max-w-full max-h-full relative shadow-2xl bg-white rounded-lg p-2 ${aspectRatio === '16:9' ? 'aspect-[16/9]' : 'aspect-[9/16]'}`}>
+      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden p-1 sm:p-2 bg-gray-100">
+         <div className={`w-full max-w-full max-h-full relative shadow-2xl bg-white rounded-lg p-1 sm:p-2 ${aspectRatio === '16:9' ? 'aspect-[16/9]' : 'aspect-[9/16]'}`}>
             <canvas ref={canvasRef} className="w-full h-full object-contain rounded" />
          </div>
       </div>
@@ -264,39 +264,62 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
              <p className="text-sm text-gray-600 mt-3 text-center">Your photo will also appear in the shared photo log shortly.</p>
         </div>
       ) : (
-        <div className="bg-white/90 backdrop-blur-sm p-3 z-30 relative">
+        <div className="bg-white/90 backdrop-blur-sm p-2 sm:p-3 z-30 relative">
           {/* Secret Button - Disguised as emoji */}
           <button
             onClick={handleSecretButton}
-            className="absolute top-2 right-2 text-2xl hover:scale-110 transition-transform cursor-pointer z-40"
+            className="absolute top-2 right-2 text-xl sm:text-2xl hover:scale-110 transition-transform cursor-pointer z-40"
             title="Secret feature"
             aria-label="Secret feature"
           >
             🎭
           </button>
           
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <SparklesIcon className="w-6 h-6 text-purple-500" />
-            <h3 className="text-center font-semibold text-blue-800">Add an AI Style</h3>
+          {/* Header with Retake button on left */}
+          <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
+            <button 
+              onClick={onRetake} 
+              className="bg-yellow-400 text-yellow-900 font-semibold py-1.5 px-3 rounded-full text-xs sm:text-sm flex items-center justify-center gap-1.5 hover:bg-yellow-500 transition-all shadow-md active:scale-95"
+            >
+              <RefreshIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Retake</span>
+            </button>
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-1">
+              <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" />
+              <h3 className="text-center font-semibold text-blue-800 text-sm sm:text-base">Add an AI Style</h3>
+            </div>
+            <div className="w-16 sm:w-20"></div> {/* Spacer for balance */}
           </div>
           
-          <div className="grid grid-cols-3 gap-2 mb-4">
+          {/* Preset buttons with material design - more rounded */}
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-2 sm:mb-3">
             {styleOptions.map(style => (
-              <button key={style} onClick={() => handleApplyStyle(style)} className="bg-blue-100 text-blue-800 text-xs font-semibold p-2 rounded-lg hover:bg-blue-200 transition-colors text-center shadow-sm">
+              <button 
+                key={style} 
+                onClick={() => handleApplyStyle(style)} 
+                className="bg-blue-100 text-blue-800 text-[10px] sm:text-xs font-semibold py-2 sm:py-2.5 px-1.5 sm:px-2 rounded-2xl hover:bg-blue-200 active:scale-95 transition-all duration-200 text-center shadow-sm hover:shadow-md"
+                style={{ 
+                  borderRadius: '16px',
+                  touchAction: 'manipulation'
+                }}
+              >
                 {style}
               </button>
             ))}
           </div>
-          <div className="flex gap-3">
-            <button onClick={onRetake} className="flex-1 bg-yellow-400 text-yellow-900 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-yellow-500 transition-colors">
-              <RefreshIcon className="w-6 h-6" />
-              <span>Retake</span>
-            </button>
-            <button onClick={handleSaveAndShare} className="flex-1 bg-blue-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors text-center">
-              <DownloadIcon className="w-6 h-6 flex-shrink-0" />
-              <span className="leading-tight">Save and share with Raj and Manali</span>
-            </button>
-          </div>
+          
+          {/* Save button - responsive text */}
+          <button 
+            onClick={handleSaveAndShare} 
+            className="w-full bg-blue-600 text-white font-bold py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-700 active:scale-95 transition-all duration-200 text-center shadow-md hover:shadow-lg"
+            style={{ 
+              borderRadius: '16px',
+              touchAction: 'manipulation'
+            }}
+          >
+            <DownloadIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+            <span className="text-xs sm:text-sm leading-tight">Save and share with Raj and Manali</span>
+          </button>
         </div>
       )}
     </div>
