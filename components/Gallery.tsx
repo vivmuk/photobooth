@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { GDRIVE_WEBAPP_URL } from '../constants';
 
 type DriveItem = {
@@ -60,18 +60,20 @@ const Gallery: React.FC<GalleryProps> = ({ onBack }) => {
     };
   }, [page]);
 
+  const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
+    const first = entries[0];
+    if (first.isIntersecting && !loading && !done) {
+      setPage((p) => p + 1);
+    }
+  }, [loading, done]);
+
   useEffect(() => {
     if (!sentinelRef.current) return;
     const el = sentinelRef.current;
-    const io = new IntersectionObserver((entries) => {
-      const first = entries[0];
-      if (first.isIntersecting && !loading && !done) {
-        setPage((p) => p + 1);
-      }
-    });
+    const io = new IntersectionObserver(handleIntersection);
     io.observe(el);
     return () => io.disconnect();
-  }, [loading, done]);
+  }, [handleIntersection]);
 
   return (
     <div className="w-full h-full flex flex-col bg-yellow-200">
@@ -104,6 +106,7 @@ const Gallery: React.FC<GalleryProps> = ({ onBack }) => {
                   alt={it.name}
                   className="w-full h-40 object-cover bg-gray-100"
                   loading="lazy"
+                  decoding="async"
                 />
                 <div className="p-2 text-xs text-blue-900 truncate">{it.name}</div>
               </a>

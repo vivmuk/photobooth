@@ -44,18 +44,22 @@ const CameraView: React.FC<CameraViewProps> = ({ onPhotoCapture, onAspectRatioCh
 
   useEffect(() => {
     const handleOrientationChange = () => {
+      // Use a small delay to ensure window dimensions are updated
       setTimeout(() => {
         const portrait = window.innerHeight > window.innerWidth;
         setIsPortrait(portrait);
         onAspectRatioChange(portrait ? '9:16' : '16:9');
-      }, 100);
+      }, 150);
     };
 
+    // Listen to both resize and orientationchange events
     window.addEventListener('resize', handleOrientationChange);
+    window.addEventListener('orientationchange', handleOrientationChange);
     handleOrientationChange(); // Initial check
 
     return () => {
       window.removeEventListener('resize', handleOrientationChange);
+      window.removeEventListener('orientationchange', handleOrientationChange);
     };
   }, [onAspectRatioChange]);
 

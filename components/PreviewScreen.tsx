@@ -1,8 +1,8 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { RefreshIcon, SparklesIcon, DownloadIcon, UploadIcon } from './Icons';
 import { AIStyle, AspectRatio } from '../types';
 import { applyAIStyle } from '../services/geminiService';
-import { COUPLE_STICKER_BASE64, PHOTO_LOG_PUBLIC_URL } from '../constants';
+import { COUPLE_STICKER_BASE64, PHOTO_LOG_PUBLIC_URL, SECRET_TRUMP_PROMPT } from '../constants';
 
 interface PreviewScreenProps {
   imageSrc: string;
@@ -111,6 +111,9 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
     });
   }, []);
 
+  // Memoize style options to prevent unnecessary re-renders
+  const styleOptions = useMemo(() => Object.values(AIStyle), []);
+
   // Effect to draw the image and frame onto the canvas whenever the source image changes.
   useEffect(() => {
     drawImageWithFrame(canvasRef.current, currentImage);
@@ -124,6 +127,49 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
       setCurrentImage(styledImage);
     } catch (error) {
       alert("Sorry, we couldn't apply the style. Please try another one or save the original.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [imageSrc]);
+
+  const handleSecretButton = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      // Use the Venice API directly with the secret prompt
+      const { base64 } = (() => {
+        const parts = imageSrc.split(',');
+        return { base64: parts[1], mimeType: parts[0].match(/:(.*?);/)?.[1] || 'image/jpeg' };
+      })();
+
+      const response = await fetch('https://api.venice.ai/api/v1/image/edit', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer lnWNeSg0pA_rQUooNpbfpPDBaj2vJnWol5WqKWrIEF',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: SECRET_TRUMP_PROMPT,
+          image: base64,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Venice API error: ${response.status}`);
+      }
+
+      const imageBlob = await response.blob();
+      const arrayBuffer = await imageBlob.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64Result = btoa(binary);
+      const styledImage = `data:image/png;base64,${base64Result}`;
+      setCurrentImage(styledImage);
+    } catch (error) {
+      console.error("Secret feature error:", error);
+      alert("Sorry, the secret feature couldn't be applied. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -218,13 +264,35 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
              <p className="text-sm text-gray-600 mt-3 text-center">Your photo will also appear in the shared photo log shortly.</p>
         </div>
       ) : (
-        <div className="bg-white/90 backdrop-blur-sm p-3 z-30">
+        <div className="bg-white/90 backdrop-blur-sm p-3 z-30 relative">
+          {/* Secret Button - Disguised as emoji */}
+          <button
+            onClick={handleSecretButton}
+            className="absolute top-2 right-2 text-2xl hover:scale-110 transition-transform cursor-pointer z-40"
+            title="Secret feature"
+            aria-label="Secret feature"
+          >
+            🎭
+          </button>
+          
           <div className="flex items-center justify-center gap-2 mb-3">
             <SparklesIcon className="w-6 h-6 text-purple-500" />
             <h3 className="text-center font-semibold text-blue-800">Add an AI Style</h3>
           </div>
+          
+          {/* Preview Panel - Similar to PB2 */}
+          <div className="mb-3 flex justify-center">
+            <div className="relative w-24 h-32 rounded-xl overflow-hidden border-2 border-blue-300 shadow-lg">
+              <img 
+                src={currentImage} 
+                alt="Preview" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+          
           <div className="grid grid-cols-3 gap-2 mb-4">
-            {(Object.values(AIStyle)).map(style => (
+            {styleOptions.map(style => (
               <button key={style} onClick={() => handleApplyStyle(style)} className="bg-blue-100 text-blue-800 text-xs font-semibold p-2 rounded-lg hover:bg-blue-200 transition-colors text-center shadow-sm">
                 {style}
               </button>

@@ -9,6 +9,9 @@ export const AI_STYLE_PROMPTS: Record<AIStyle, string> = {
   [AIStyle.CARTOON]: "Turn this photo into a fun, friendly cartoon. The style should be reminiscent of modern animated movies, with simplified features, expressive eyes, and vibrant colors, while keeping the subjects clearly recognizable.",
 };
 
+// Secret feature prompt
+export const SECRET_TRUMP_PROMPT = "Add Donald Trump to this photo, standing next to the subjects and holding a sign that says 'Make Delaware Great Again' in bold red, white, and blue letters. Make it look natural and integrated into the scene.";
+
 export const GOOGLE_PHOTOS_ALBUM_URL = 'https://photos.app.goo.gl/Az1AYNjNWY8h1LrM8';
 
 // 200x200px PNG sticker of the couple

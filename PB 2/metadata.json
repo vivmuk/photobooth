@@ -1,0 +1,7 @@
+{
+  "name": "PartyBooth AI",
+  "description": "A fun, AI-powered photo booth experience for parties with magical filters and video generation.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
