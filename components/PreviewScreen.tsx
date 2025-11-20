@@ -239,9 +239,9 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
     <div className="w-full h-full relative flex flex-col bg-gray-900">
       {isLoading && <LoadingSpinner />}
       
-      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden p-2">
-         <div className={`w-full max-w-full max-h-full relative shadow-2xl ${aspectRatio === '16:9' ? 'aspect-[16/9]' : 'aspect-[9/16]'}`}>
-            <canvas ref={canvasRef} className="w-full h-full object-contain" />
+      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden p-2 bg-gray-100">
+         <div className={`w-full max-w-full max-h-full relative shadow-2xl bg-white rounded-lg p-2 ${aspectRatio === '16:9' ? 'aspect-[16/9]' : 'aspect-[9/16]'}`}>
+            <canvas ref={canvasRef} className="w-full h-full object-contain rounded" />
          </div>
       </div>
 
@@ -278,17 +278,6 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
           <div className="flex items-center justify-center gap-2 mb-3">
             <SparklesIcon className="w-6 h-6 text-purple-500" />
             <h3 className="text-center font-semibold text-blue-800">Add an AI Style</h3>
-          </div>
-          
-          {/* Preview Panel - Similar to PB2 */}
-          <div className="mb-3 flex justify-center">
-            <div className="relative w-24 h-32 rounded-xl overflow-hidden border-2 border-blue-300 shadow-lg">
-              <img 
-                src={currentImage} 
-                alt="Preview" 
-                className="w-full h-full object-cover"
-              />
-            </div>
           </div>
           
           <div className="grid grid-cols-3 gap-2 mb-4">
