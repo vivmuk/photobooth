@@ -44,22 +44,22 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onPhotoUpload, o
       <div className="z-10 bg-gradient-to-br from-pink-100 to-blue-100 backdrop-blur-md p-8 rounded-2xl shadow-2xl border-4 border-yellow-300">
         <div className="flex items-center justify-center gap-2 mb-2">
           <span className="text-4xl">👶</span>
-          <h1 className="text-4xl md:text-5xl font-bold text-blue-600 mb-2">
-            Baby Shower
+          <h1 className="text-4xl md:text-5xl font-title text-blue-600 mb-2" style={{ fontFamily: "'Fredoka One', cursive" }}>
+            Manali & Raj Baby Shower
           </h1>
           <span className="text-4xl">🎉</span>
         </div>
-        <p className="text-2xl md:text-3xl font-script text-pink-600 mb-4">
+        <p className="text-2xl md:text-3xl font-fun text-pink-600 mb-4" style={{ fontFamily: "'Chewy', cursive" }}>
           AI Photo Booth
         </p>
         <div className="flex items-center justify-center gap-2 mb-6">
           <span className="text-2xl">📸</span>
-          <p className="text-lg text-blue-700 font-semibold">
-            Snap or upload a moment for Manali & Raj!
+          <p className="text-lg text-blue-700 font-playful font-semibold" style={{ fontFamily: "'Comic Neue', cursive" }}>
+            Snap or upload a moment for them!
           </p>
           <span className="text-2xl">✨</span>
         </div>
-        <p className="text-sm text-blue-600/80 mb-4 font-medium">
+        <p className="text-sm text-blue-600/80 mb-4 font-playful font-medium" style={{ fontFamily: "'Comic Neue', cursive" }}>
           Created By Vivek
         </p>
         <div className="flex flex-col gap-4 w-full max-w-xs mx-auto">

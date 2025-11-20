@@ -245,18 +245,34 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
 
   const handleSaveAndShare = async () => {
     setIsLoading(true);
+    setLoadingMessage("Saving your photo...");
+    setProgress(0);
+    setIsSecretLoading(false);
+    
+    // Progress simulation for saving
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 95) return prev;
+        return prev + Math.random() * 15;
+      });
+    }, 200);
+    
     try {
       const canvas = canvasRef.current;
       if (!canvas) throw new Error("Canvas not ready");
 
       // Redraw one last time to ensure highest quality before saving
+      setProgress(20);
       await drawImageWithFrame(canvas, currentImage);
+      setProgress(40);
 
       const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
       const filename = `Manali_Raj_Baby_Shower_${new Date().getTime()}.jpg`;
+      setProgress(50);
 
       // 1) Upload to Google Drive first (so it can't be interrupted)
       try {
+        setLoadingMessage("Uploading to gallery...");
         // Create a smaller upload to stay under serverless limits
         const maxSide = 1600;
         const scale = Math.min(1, maxSide / Math.max(canvas.width, canvas.height));
@@ -273,11 +289,13 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
         } else {
           uploadDataUrl = canvas.toDataURL('image/jpeg', 0.85);
         }
+        setProgress(60);
         const res = await fetch('/api/drive-upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename, dataUrl: uploadDataUrl }),
         });
+        setProgress(80);
         if (!res.ok) {
           console.warn('Drive upload returned non-OK:', res.status);
         }
@@ -286,24 +304,33 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
       }
 
       // 2) Then trigger local download
+      setLoadingMessage("Preparing download...");
+      setProgress(90);
       const link = document.createElement('a');
       link.href = dataUrl;
       link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      setProgress(100);
 
-      setShowSavedMessage(true);
+      clearInterval(progressInterval);
+      setTimeout(() => {
+        setShowSavedMessage(true);
+        setIsLoading(false);
+        setProgress(0);
+      }, 300);
     } catch (error) {
+      clearInterval(progressInterval);
+      setProgress(0);
+      setIsLoading(false);
       console.error('Failed to save image:', error);
       alert('Could not save the image. Please try again.');
-    } finally {
-        setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full h-full relative flex flex-col bg-gray-900">
+    <div className="w-full h-full relative flex flex-col bg-gray-900 overflow-hidden" style={{ height: '100dvh', maxHeight: '100dvh' }}>
       {/* Home Button - Stands out on preview screen */}
       {onGoHome && (
         <button
@@ -316,7 +343,7 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
       
       {isLoading && <LoadingSpinner message={loadingMessage} isSecret={isSecretLoading} progress={progress} />}
       
-      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden p-1 sm:p-2 bg-gray-100">
+      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden p-1 sm:p-2 bg-gray-100" style={{ minHeight: 0, flexShrink: 1, maxHeight: 'calc(100dvh - 180px)' }}>
          <div className={`w-full max-w-full max-h-full relative shadow-2xl bg-white rounded-lg p-1 sm:p-2 ${aspectRatio === '16:9' ? 'aspect-[16/9]' : 'aspect-[9/16]'}`}>
             <canvas ref={canvasRef} className="w-full h-full object-contain rounded" />
          </div>
@@ -341,11 +368,11 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
              <p className="text-sm text-gray-600 mt-3 text-center">Your photo will also appear in the shared photo log shortly.</p>
         </div>
       ) : (
-        <div className="bg-white/90 backdrop-blur-sm p-2 sm:p-3 z-30 relative">
+        <div className="bg-white/90 backdrop-blur-sm p-1.5 sm:p-2 z-30 relative flex-shrink-0" style={{ maxHeight: '180px', minHeight: 'fit-content' }}>
           {/* Secret Button - Disguised as emoji */}
           <button
             onClick={handleSecretButton}
-            className="absolute top-2 right-2 text-xl sm:text-2xl hover:scale-110 transition-transform cursor-pointer z-40"
+            className="absolute top-1.5 right-1.5 text-lg sm:text-xl hover:scale-110 transition-transform cursor-pointer z-40"
             title="Secret feature"
             aria-label="Secret feature"
           >
@@ -353,28 +380,28 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
           </button>
           
           {/* Header with Retake button on left */}
-          <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
+          <div className="flex items-center justify-between gap-1.5 mb-1 sm:mb-1.5">
             <button 
               onClick={onRetake} 
-              className="bg-yellow-400 text-yellow-900 font-semibold py-1.5 px-3 rounded-full text-xs sm:text-sm flex items-center justify-center gap-1.5 hover:bg-yellow-500 transition-all shadow-md active:scale-95"
+              className="bg-yellow-400 text-yellow-900 font-semibold py-1 px-2.5 rounded-full text-[10px] sm:text-xs flex items-center justify-center gap-1 hover:bg-yellow-500 transition-all shadow-md active:scale-95"
             >
-              <RefreshIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+              <RefreshIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">Retake</span>
             </button>
-            <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-1">
-              <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" />
-              <h3 className="text-center font-semibold text-blue-800 text-sm sm:text-base">Add an AI Style</h3>
+            <div className="flex items-center justify-center gap-1 sm:gap-1.5 flex-1">
+              <SparklesIcon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" />
+              <h3 className="text-center font-semibold text-blue-800 text-xs sm:text-sm">Add an AI Style</h3>
             </div>
-            <div className="w-16 sm:w-20"></div> {/* Spacer for balance */}
+            <div className="w-12 sm:w-16"></div> {/* Spacer for balance */}
           </div>
           
           {/* Preset buttons with material design - bigger and more rounded */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-2.5 mb-2 sm:mb-3">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-1 sm:mb-1.5">
             {styleOptions.map(style => (
               <button 
                 key={style} 
                 onClick={() => handleApplyStyle(style)} 
-                className="bg-blue-100 text-blue-800 text-xs sm:text-sm font-semibold py-3 sm:py-3.5 px-2 sm:px-3 rounded-2xl hover:bg-blue-200 active:scale-95 transition-all duration-200 text-center shadow-sm hover:shadow-md"
+                className="bg-blue-100 text-blue-800 text-[9px] sm:text-xs font-semibold py-2 sm:py-2.5 px-1 sm:px-2 rounded-2xl hover:bg-blue-200 active:scale-95 transition-all duration-200 text-center shadow-sm hover:shadow-md leading-tight"
                 style={{ 
                   borderRadius: '16px',
                   touchAction: 'manipulation'
@@ -388,14 +415,14 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
           {/* Save button - responsive text */}
           <button 
             onClick={handleSaveAndShare} 
-            className="w-full bg-blue-600 text-white font-bold py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-700 active:scale-95 transition-all duration-200 text-center shadow-md hover:shadow-lg"
+            className="w-full bg-blue-600 text-white font-bold py-2 sm:py-2.5 px-2 sm:px-3 rounded-2xl flex items-center justify-center gap-1.5 hover:bg-blue-700 active:scale-95 transition-all duration-200 text-center shadow-md hover:shadow-lg"
             style={{ 
               borderRadius: '16px',
               touchAction: 'manipulation'
             }}
           >
-            <DownloadIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-            <span className="text-xs sm:text-sm leading-tight">Save and share with Raj and Manali</span>
+            <DownloadIcon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+            <span className="text-[10px] sm:text-xs leading-tight">Save and share with Raj and Manali</span>
           </button>
         </div>
       )}
