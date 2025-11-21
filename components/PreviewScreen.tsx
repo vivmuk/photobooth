@@ -330,7 +330,10 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
   };
 
   return (
-    <div className="w-full h-full relative flex flex-col bg-gray-900 overflow-hidden" style={{ height: '100dvh', maxHeight: '100dvh' }}>
+    <div
+      className="w-full h-full relative flex flex-col bg-gray-900 overflow-hidden"
+      style={{ height: '100dvh', maxHeight: '100dvh' }}
+    >
       {/* Home Button - Stands out on preview screen */}
       {onGoHome && (
         <button
@@ -343,10 +346,15 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
       
       {isLoading && <LoadingSpinner message={loadingMessage} isSecret={isSecretLoading} progress={progress} />}
       
-      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden p-1 sm:p-2 bg-gray-100" style={{ minHeight: 0, flexShrink: 1, maxHeight: 'calc(100dvh - 220px)' }}>
-         <div className={`w-full max-w-[360px] sm:max-w-[520px] max-h-[72vh] sm:max-h-[78vh] relative shadow-2xl bg-white rounded-lg p-1 sm:p-2 ${aspectRatio === '16:9' ? 'aspect-[16/9]' : 'aspect-[9/16]'}`}>
-            <canvas ref={canvasRef} className="w-full h-full object-contain rounded" />
-         </div>
+      <div
+        className="relative w-full flex-1 flex items-center justify-center overflow-hidden px-2 sm:px-3 pt-2 pb-3 bg-gray-100"
+        style={{ minHeight: '42vh', maxHeight: '65vh' }}
+      >
+        <div
+          className={`w-full max-w-[420px] sm:max-w-[600px] max-h-full relative shadow-2xl bg-white rounded-xl p-1.5 sm:p-3 ${aspectRatio === '16:9' ? 'aspect-[16/9]' : 'aspect-[9/16]'}`}
+        >
+          <canvas ref={canvasRef} className="w-full h-full object-contain rounded-lg" />
+        </div>
       </div>
 
       {showSavedMessage ? (
@@ -368,7 +376,10 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
              <p className="text-sm text-gray-600 mt-3 text-center">Your photo will also appear in the shared photo log shortly.</p>
         </div>
       ) : (
-        <div className="bg-white/90 backdrop-blur-sm p-1.5 sm:p-2 z-30 relative flex-shrink-0" style={{ maxHeight: '180px', minHeight: 'fit-content' }}>
+        <div
+          className="bg-white/95 backdrop-blur-sm p-2 sm:p-3 z-30 relative flex-shrink-0 w-full shadow-[0_-8px_24px_rgba(0,0,0,0.12)] overflow-y-auto"
+          style={{ maxHeight: '42vh', minHeight: 'fit-content' }}
+        >
           {/* Secret Button - Disguised as emoji */}
           <button
             onClick={handleSecretButton}
@@ -380,12 +391,12 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
           </button>
           
           {/* Header with Retake button on left */}
-          <div className="flex items-center justify-between gap-1.5 mb-1 sm:mb-1.5">
-            <button 
-              onClick={onRetake} 
-              className="bg-yellow-400 text-yellow-900 font-semibold py-1 px-2.5 rounded-full text-[10px] sm:text-xs flex items-center justify-center gap-1 hover:bg-yellow-500 transition-all shadow-md active:scale-95"
+          <div className="flex items-center justify-between gap-1.5 mb-2 sm:mb-2.5">
+            <button
+              onClick={onRetake}
+              className="bg-yellow-400 text-yellow-900 font-semibold py-1.5 px-3 rounded-full text-[11px] sm:text-xs flex items-center justify-center gap-1.5 hover:bg-yellow-500 transition-all shadow-md active:scale-95"
             >
-              <RefreshIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <RefreshIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Retake</span>
             </button>
             <div className="flex items-center justify-center gap-1 sm:gap-1.5 flex-1">
@@ -394,35 +405,39 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
             </div>
             <div className="w-12 sm:w-16"></div> {/* Spacer for balance */}
           </div>
-          
+
           {/* Preset buttons with material design - bigger and more rounded */}
-          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-1 sm:mb-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5 mb-2 sm:mb-3">
             {styleOptions.map(style => (
               <button
                 key={style}
                 onClick={() => handleApplyStyle(style)}
-                className="bg-blue-100 text-blue-800 text-[10px] sm:text-sm font-semibold py-2.5 sm:py-3 px-1.5 sm:px-3 rounded-2xl hover:bg-blue-200 active:scale-95 transition-all duration-200 text-center shadow-sm hover:shadow-md leading-tight"
+                className="bg-blue-100 text-blue-800 font-semibold rounded-2xl hover:bg-blue-200 active:scale-95 transition-all duration-200 text-center shadow-sm hover:shadow-md leading-tight"
                 style={{
                   borderRadius: '16px',
-                  touchAction: 'manipulation'
+                  touchAction: 'manipulation',
+                  fontSize: 'clamp(0.78rem, 2.2vw, 0.95rem)',
+                  padding: 'clamp(10px, 2.5vh, 14px) clamp(10px, 2vw, 14px)'
                 }}
               >
                 {style}
               </button>
             ))}
           </div>
-          
+
           {/* Save button - responsive text */}
           <button
             onClick={handleSaveAndShare}
-            className="w-full bg-blue-600 text-white font-bold py-3 sm:py-3.5 px-3 sm:px-4 rounded-2xl flex items-center justify-center gap-2 sm:gap-3 hover:bg-blue-700 active:scale-95 transition-all duration-200 text-center shadow-md hover:shadow-lg"
+            className="w-full bg-blue-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 sm:gap-3 hover:bg-blue-700 active:scale-95 transition-all duration-200 text-center shadow-md hover:shadow-lg"
             style={{
               borderRadius: '16px',
-              touchAction: 'manipulation'
+              touchAction: 'manipulation',
+              fontSize: 'clamp(0.95rem, 2.6vw, 1.1rem)',
+              padding: 'clamp(12px, 3vh, 16px) clamp(14px, 4vw, 18px)'
             }}
           >
             <DownloadIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-            <span className="text-xs sm:text-base leading-tight">Save and share with Raj and Manali</span>
+            <span className="leading-tight">Save and share with Raj and Manali</span>
           </button>
         </div>
       )}
