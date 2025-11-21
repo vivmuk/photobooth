@@ -343,8 +343,8 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
       
       {isLoading && <LoadingSpinner message={loadingMessage} isSecret={isSecretLoading} progress={progress} />}
       
-      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden p-1 sm:p-2 bg-gray-100" style={{ minHeight: 0, flexShrink: 1, maxHeight: 'calc(100dvh - 180px)' }}>
-         <div className={`w-full max-w-full max-h-full relative shadow-2xl bg-white rounded-lg p-1 sm:p-2 ${aspectRatio === '16:9' ? 'aspect-[16/9]' : 'aspect-[9/16]'}`}>
+      <div className="relative w-full flex-1 flex items-center justify-center overflow-hidden p-1 sm:p-2 bg-gray-100" style={{ minHeight: 0, flexShrink: 1, maxHeight: 'calc(100dvh - 220px)' }}>
+         <div className={`w-full max-w-[360px] sm:max-w-[520px] max-h-[72vh] sm:max-h-[78vh] relative shadow-2xl bg-white rounded-lg p-1 sm:p-2 ${aspectRatio === '16:9' ? 'aspect-[16/9]' : 'aspect-[9/16]'}`}>
             <canvas ref={canvasRef} className="w-full h-full object-contain rounded" />
          </div>
       </div>
@@ -398,11 +398,11 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
           {/* Preset buttons with material design - bigger and more rounded */}
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-1 sm:mb-1.5">
             {styleOptions.map(style => (
-              <button 
-                key={style} 
-                onClick={() => handleApplyStyle(style)} 
-                className="bg-blue-100 text-blue-800 text-[9px] sm:text-xs font-semibold py-2 sm:py-2.5 px-1 sm:px-2 rounded-2xl hover:bg-blue-200 active:scale-95 transition-all duration-200 text-center shadow-sm hover:shadow-md leading-tight"
-                style={{ 
+              <button
+                key={style}
+                onClick={() => handleApplyStyle(style)}
+                className="bg-blue-100 text-blue-800 text-[10px] sm:text-sm font-semibold py-2.5 sm:py-3 px-1.5 sm:px-3 rounded-2xl hover:bg-blue-200 active:scale-95 transition-all duration-200 text-center shadow-sm hover:shadow-md leading-tight"
+                style={{
                   borderRadius: '16px',
                   touchAction: 'manipulation'
                 }}
@@ -413,16 +413,16 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
           </div>
           
           {/* Save button - responsive text */}
-          <button 
-            onClick={handleSaveAndShare} 
-            className="w-full bg-blue-600 text-white font-bold py-2 sm:py-2.5 px-2 sm:px-3 rounded-2xl flex items-center justify-center gap-1.5 hover:bg-blue-700 active:scale-95 transition-all duration-200 text-center shadow-md hover:shadow-lg"
-            style={{ 
+          <button
+            onClick={handleSaveAndShare}
+            className="w-full bg-blue-600 text-white font-bold py-3 sm:py-3.5 px-3 sm:px-4 rounded-2xl flex items-center justify-center gap-2 sm:gap-3 hover:bg-blue-700 active:scale-95 transition-all duration-200 text-center shadow-md hover:shadow-lg"
+            style={{
               borderRadius: '16px',
               touchAction: 'manipulation'
             }}
           >
-            <DownloadIcon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-            <span className="text-[10px] sm:text-xs leading-tight">Save and share with Raj and Manali</span>
+            <DownloadIcon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+            <span className="text-xs sm:text-base leading-tight">Save and share with Raj and Manali</span>
           </button>
         </div>
       )}
