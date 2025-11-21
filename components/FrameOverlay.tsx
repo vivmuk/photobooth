@@ -33,7 +33,7 @@ const FrameOverlay: React.FC<FrameOverlayProps> = ({ interactive = true }) => {
       <div className="absolute bottom-0 left-0 right-0 p-4 pb-28 md:pb-24 bg-gradient-to-t from-blue-200/50 to-transparent">
         <div className="text-center text-white">
           <h1 className="font-script text-3xl md:text-4xl" style={{ textShadow: '2px 2px 4px rgba(49, 130, 206, 0.7)' }}>
-            Manali & Raj Baby Shower
+            Manali and Raj's Baby Shower
           </h1>
           <p className="font-script text-2xl md:text-3xl" style={{ textShadow: '1px 1px 3px rgba(49, 130, 206, 0.7)' }}>
             11.23.2025

@@ -123,8 +123,8 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
           ctx.shadowOffsetY = 0;
 
           ctx.font = `bold ${titleSize}px 'Pacifico', cursive`;
-          ctx.strokeText('Manali & Raj Baby Shower', canvas.width / 2, canvas.height - bottomPadding - dateSize * 1.5);
-          ctx.fillText('Manali & Raj Baby Shower', canvas.width / 2, canvas.height - bottomPadding - dateSize * 1.5);
+          ctx.strokeText("Manali and Raj's Baby Shower", canvas.width / 2, canvas.height - bottomPadding - dateSize * 1.5);
+          ctx.fillText("Manali and Raj's Baby Shower", canvas.width / 2, canvas.height - bottomPadding - dateSize * 1.5);
 
           ctx.font = `${dateSize}px 'Pacifico', cursive`;
           ctx.strokeText('11.23.2025', canvas.width / 2, canvas.height - bottomPadding);
