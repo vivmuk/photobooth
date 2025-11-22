@@ -20,9 +20,9 @@ interface LoadingSpinnerProps {
 }
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ message, isSecret, progress }) => {
-  const displayMessage = isSecret 
+  const displayMessage = isSecret
     ? "🎉 You found the secret preset! Creating magic..."
-    : (message || "Applying AI magic...");
+    : (message || "Adding AI magic—hang tight, your patience will be worth it!");
   
   return (
     <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center z-40 backdrop-blur-sm">
@@ -156,9 +156,9 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ imageSrc, onRetake, onDon
     const progressInterval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 90) return prev; // Don't go to 100 until done
-        return prev + Math.random() * 10;
+        return prev + Math.random() * 6;
       });
-    }, 500);
+    }, 700);
     
     try {
       const styledImage = await applyAIStyle(imageSrc, style); // Always style the original
