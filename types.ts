@@ -1,4 +1,4 @@
-export type View = 'welcome' | 'camera' | 'preview' | 'gallery';
+export type View = 'welcome' | 'camera' | 'preview' | 'gallery' | 'photoBook';
 export type AspectRatio = '9:16' | '16:9';
 
 export enum AIStyle {
