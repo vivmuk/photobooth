@@ -39,32 +39,14 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
       try {
         setLoading(true);
         setError(null);
-        const combined: DriveItem[] = [];
-        const seen = new Set<string>();
-        const pageSize = 60;
-        let page = 0;
-
-        while (true) {
-          const res = await fetch(`/api/drive-list?page=${page}&pageSize=${pageSize}`, { method: 'GET' });
-          if (!res.ok) {
-            throw new Error(`Unable to load the photo book right now (status ${res.status}).`);
-          }
-          const data = await res.json();
-          const files = (data.files || []) as DriveItem[];
-          for (const file of files) {
-            if (!seen.has(file.id)) {
-              seen.add(file.id);
-              combined.push(file);
-            }
-          }
-          if (files.length < pageSize || files.length === 0) {
-            break;
-          }
-          page += 1;
+        const res = await fetch('/api/drive-list?all=1&pageSize=80', { method: 'GET' });
+        if (!res.ok) {
+          throw new Error(`Unable to load the photo book right now (status ${res.status}).`);
         }
-
+        const data = await res.json();
+        const files = (data.files || []) as DriveItem[];
         if (!cancelled) {
-          setItems(combined);
+          setItems(files);
           setPageIndex(0);
         }
       } catch (e: any) {
