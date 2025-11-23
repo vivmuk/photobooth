@@ -3,6 +3,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import CameraView from './components/CameraView';
 import PreviewScreen from './components/PreviewScreen';
 import Gallery from './components/Gallery';
+import PhotoBook from './components/PhotoBook';
 import type { View, AspectRatio } from './types';
 
 const getInitialAspectRatio = (): AspectRatio => {
@@ -59,7 +60,13 @@ const App: React.FC = () => {
   const renderView = () => {
     switch (view) {
       case 'welcome':
-        return <WelcomeScreen onStart={handleStart} onPhotoUpload={handlePhotoUpload} onViewGallery={() => setView('gallery')} />;
+        return (
+          <WelcomeScreen
+            onStart={handleStart}
+            onPhotoUpload={handlePhotoUpload}
+            onOpenPhotoBook={() => setView('photoBook')}
+          />
+        );
       case 'camera':
         return <CameraView 
                   onPhotoCapture={handlePhotoCapture} 
@@ -81,8 +88,10 @@ const App: React.FC = () => {
         return null;
       case 'gallery':
         return <Gallery onBack={() => setView('welcome')} />;
+      case 'photoBook':
+        return <PhotoBook onBack={() => setView('welcome')} />;
       default:
-        return <WelcomeScreen onStart={handleStart} onPhotoUpload={handlePhotoUpload} />;
+        return <WelcomeScreen onStart={handleStart} onPhotoUpload={handlePhotoUpload} onOpenPhotoBook={() => setView('photoBook')} />;
     }
   };
 

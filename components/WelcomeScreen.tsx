@@ -4,10 +4,10 @@ import FrameOverlay from './FrameOverlay';
 interface WelcomeScreenProps {
   onStart: () => void;
   onPhotoUpload: (image: string) => void;
-  onViewGallery: () => void;
+  onOpenPhotoBook: () => void;
 }
 
-const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onPhotoUpload, onViewGallery }) => {
+const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onPhotoUpload, onOpenPhotoBook }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleUploadClick = () => {
@@ -78,11 +78,11 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, onPhotoUpload, o
             Upload Photo
             </button>
             <button
-            onClick={onViewGallery}
+            onClick={onOpenPhotoBook}
             className="bg-gradient-to-r from-purple-400 to-pink-400 text-white font-bold py-3 px-8 rounded-full text-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-in-out flex items-center justify-center gap-2"
             >
             <span className="text-lg">🖼️</span>
-            View Gallery
+            Open Photo Book
             </button>
         </div>
         <input
