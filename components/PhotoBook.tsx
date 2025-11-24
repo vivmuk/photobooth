@@ -1,11 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-interface DriveItem {
-  id: string;
-  name: string;
-  createdTime?: string;
-}
-
+// Fun tips for first-time parents
 const FUN_TIPS: string[] = [
   "Sleep when the baby sleeps, dance when the baby wiggles—it's the new cardio!",
   "Tag-team diaper duty like a relay race; pass the wipes baton with flair.",
@@ -17,53 +12,183 @@ const FUN_TIPS: string[] = [
   "Remember, laundry is infinite; joy comes from the giggles, not the folded towels.",
   "Create a tiny traditions jar and pull one out each Sunday for surprise family magic.",
   "Let friends help; a dropped-off casserole is basically a love letter in foil.",
+  "Sleep when the baby sleeps - even if it's just 20 minutes! 💤",
+  "You don't need to sanitize everything. A little dirt builds immunity! 🦠",
+  "Trust your instincts - you know your baby better than anyone! 💝",
+  "It's okay to ask for help. Superheroes have sidekicks too! 🦸",
+  "Babies cry - it's their only way to communicate. You're not doing anything wrong! 😢",
+  "Take lots of photos, but also be present in the moment! 📸",
+  "Every baby is different. Don't compare yours to others! 🌟",
+  "You will make mistakes, and that's perfectly normal! 💪",
+  "Self-care isn't selfish - it's necessary for you and baby! 🛁",
+  "The days are long, but the years are short. Enjoy every stage! ⏰",
 ];
 
-const idToViewUrl = (id: string) => `/api/drive-image?id=${id}`;
-const idToOpenUrl = (id: string) => `https://drive.google.com/file/d/${id}/view`;
+// Cover image filename - the one with the text overlay
+const COVER_IMAGE_NAME = 'Manali_Raj_Baby_Shower_1763932447250.jpg';
+
+// List of all image filenames
+const IMAGE_FILENAMES = [
+  'Manali_Raj_Baby_Shower_1763302187461.jpg',
+  'Manali_Raj_Baby_Shower_1763303028137.jpg',
+  'Manali_Raj_Baby_Shower_1763304678465.jpg',
+  'Manali_Raj_Baby_Shower_1763304976387.jpg',
+  'Manali_Raj_Baby_Shower_1763305062799.jpg',
+  'Manali_Raj_Baby_Shower_1763322440752.jpg',
+  'Manali_Raj_Baby_Shower_1763322592706.jpg',
+  'Manali_Raj_Baby_Shower_1763322719795.jpg',
+  'Manali_Raj_Baby_Shower_1763322804280.jpg',
+  'Manali_Raj_Baby_Shower_1763590986592.jpg',
+  'Manali_Raj_Baby_Shower_1763601252001.jpg',
+  'Manali_Raj_Baby_Shower_1763601441667.jpg',
+  'Manali_Raj_Baby_Shower_1763605771902.jpg',
+  'Manali_Raj_Baby_Shower_1763606130147.jpg',
+  'Manali_Raj_Baby_Shower_1763749095474.jpg',
+  'Manali_Raj_Baby_Shower_1763751326124.jpg',
+  'Manali_Raj_Baby_Shower_1763755342270.jpg',
+  'Manali_Raj_Baby_Shower_1763755877161.jpg',
+  'Manali_Raj_Baby_Shower_1763763893426.jpg',
+  'Manali_Raj_Baby_Shower_1763767461860.jpg',
+  'Manali_Raj_Baby_Shower_1763767741148.jpg',
+  'Manali_Raj_Baby_Shower_1763774278032.jpg',
+  'Manali_Raj_Baby_Shower_1763776695614.jpg',
+  'Manali_Raj_Baby_Shower_1763776900177.jpg',
+  'Manali_Raj_Baby_Shower_1763853301458.jpg',
+  'Manali_Raj_Baby_Shower_1763853533996.jpg',
+  'Manali_Raj_Baby_Shower_1763853648813.jpg',
+  'Manali_Raj_Baby_Shower_1763853775935.jpg',
+  'Manali_Raj_Baby_Shower_1763854751501.jpg',
+  'Manali_Raj_Baby_Shower_1763856707897.jpg',
+  'Manali_Raj_Baby_Shower_1763864683519.jpg',
+  'Manali_Raj_Baby_Shower_1763864706754.jpg',
+  'Manali_Raj_Baby_Shower_1763900968822.jpg',
+  'Manali_Raj_Baby_Shower_1763901087965.jpg',
+  'Manali_Raj_Baby_Shower_1763917075509.jpg',
+  'Manali_Raj_Baby_Shower_1763917412315.jpg',
+  'Manali_Raj_Baby_Shower_1763917669749.jpg',
+  'Manali_Raj_Baby_Shower_1763917964014.jpg',
+  'Manali_Raj_Baby_Shower_1763919770119.jpg',
+  'Manali_Raj_Baby_Shower_1763922596724.jpg',
+  'Manali_Raj_Baby_Shower_1763922713559.jpg',
+  'Manali_Raj_Baby_Shower_1763922782151.jpg',
+  'Manali_Raj_Baby_Shower_1763922880288.jpg',
+  'Manali_Raj_Baby_Shower_1763922937416.jpg',
+  'Manali_Raj_Baby_Shower_1763922969590.jpg',
+  'Manali_Raj_Baby_Shower_1763922985107.jpg',
+  'Manali_Raj_Baby_Shower_1763922988025.jpg',
+  'Manali_Raj_Baby_Shower_1763923009745.jpg',
+  'Manali_Raj_Baby_Shower_1763923108802.jpg',
+  'Manali_Raj_Baby_Shower_1763923125819.jpg',
+  'Manali_Raj_Baby_Shower_1763923133212.jpg',
+  'Manali_Raj_Baby_Shower_1763923140278.jpg',
+  'Manali_Raj_Baby_Shower_1763923173251.jpg',
+  'Manali_Raj_Baby_Shower_1763923176147.jpg',
+  'Manali_Raj_Baby_Shower_1763923178504.jpg',
+  'Manali_Raj_Baby_Shower_1763923234978.jpg',
+  'Manali_Raj_Baby_Shower_1763923252547.jpg',
+  'Manali_Raj_Baby_Shower_1763923278887.jpg',
+  'Manali_Raj_Baby_Shower_1763923280150.jpg',
+  'Manali_Raj_Baby_Shower_1763923317316.jpg',
+  'Manali_Raj_Baby_Shower_1763923410905.jpg',
+  'Manali_Raj_Baby_Shower_1763923476848.jpg',
+  'Manali_Raj_Baby_Shower_1763923508653.jpg',
+  'Manali_Raj_Baby_Shower_1763923575862.jpg',
+  'Manali_Raj_Baby_Shower_1763923661636.jpg',
+  'Manali_Raj_Baby_Shower_1763923839381.jpg',
+  'Manali_Raj_Baby_Shower_1763923863943.jpg',
+  'Manali_Raj_Baby_Shower_1763923868147.jpg',
+  'Manali_Raj_Baby_Shower_1763923887672.jpg',
+  'Manali_Raj_Baby_Shower_1763923887774.jpg',
+  'Manali_Raj_Baby_Shower_1763923907956.jpg',
+  'Manali_Raj_Baby_Shower_1763923926458.jpg',
+  'Manali_Raj_Baby_Shower_1763924105386.jpg',
+  'Manali_Raj_Baby_Shower_1763925024807.jpg',
+  'Manali_Raj_Baby_Shower_1763925030442.jpg',
+  'Manali_Raj_Baby_Shower_1763925044264.jpg',
+  'Manali_Raj_Baby_Shower_1763925261594.jpg',
+  'Manali_Raj_Baby_Shower_1763925294324.jpg',
+  'Manali_Raj_Baby_Shower_1763925634085.jpg',
+  'Manali_Raj_Baby_Shower_1763925743044.jpg',
+  'Manali_Raj_Baby_Shower_1763925828610.jpg',
+  'Manali_Raj_Baby_Shower_1763925988815.jpg',
+  'Manali_Raj_Baby_Shower_1763926062491.jpg',
+  'Manali_Raj_Baby_Shower_1763926075145.jpg',
+  'Manali_Raj_Baby_Shower_1763926138429.jpg',
+  'Manali_Raj_Baby_Shower_1763926172946.jpg',
+  'Manali_Raj_Baby_Shower_1763926222794.jpg',
+  'Manali_Raj_Baby_Shower_1763926298972.jpg',
+  'Manali_Raj_Baby_Shower_1763926443010.jpg',
+  'Manali_Raj_Baby_Shower_1763926854549.jpg',
+  'Manali_Raj_Baby_Shower_1763928819188.jpg',
+  'Manali_Raj_Baby_Shower_1763929593438.jpg',
+  'Manali_Raj_Baby_Shower_1763929684073.jpg',
+  'Manali_Raj_Baby_Shower_1763930104146.jpg',
+  'Manali_Raj_Baby_Shower_1763930320254.jpg',
+  'Manali_Raj_Baby_Shower_1763932447250.jpg',
+  'Manali_Raj_Baby_Shower_1763932636844.jpg',
+];
+
+interface PhotoItem {
+  id: string;
+  name: string;
+  src: string;
+}
 
 interface PhotoBookProps {
   onBack: () => void;
 }
 
 const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
-  const [items, setItems] = useState<DriveItem[]>([]);
+  const [items, setItems] = useState<PhotoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageIndex, setPageIndex] = useState(0);
   const [isTurning, setIsTurning] = useState<'forward' | 'backward' | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-    const fetchAll = async () => {
+    const loadImages = async () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch('/api/drive-list?all=1&pageSize=80', { method: 'GET' });
-        if (!res.ok) {
-          throw new Error(`Unable to load the photo book right now (status ${res.status}).`);
+        
+        const basePath = '/drive-download-20251123T234132Z-1-001';
+        const allImages = [COVER_IMAGE_NAME, ...IMAGE_FILENAMES.filter(name => name !== COVER_IMAGE_NAME)];
+        
+        // Preload images to verify they exist
+        const loadedItems: PhotoItem[] = [];
+        
+        for (const filename of allImages) {
+          const src = `${basePath}/${filename}`;
+          const img = new Image();
+          
+          await new Promise<void>((resolve, reject) => {
+            img.onload = () => {
+              loadedItems.push({
+                id: filename,
+                name: filename.replace(/^Manali_Raj_Baby_Shower_|\.jpg$/g, '').replace(/_/g, ' '),
+                src: src,
+              });
+              resolve();
+            };
+            img.onerror = () => {
+              // Skip images that fail to load
+              console.warn(`Failed to load image: ${filename}`);
+              resolve();
+            };
+            img.src = src;
+          });
         }
-        const data = await res.json();
-        const files = (data.files || []) as DriveItem[];
-        if (!cancelled) {
-          setItems(files);
-          setPageIndex(0);
-        }
+        
+        setItems(loadedItems);
+        setPageIndex(0);
       } catch (e: any) {
-        if (!cancelled) {
-          setError(e?.message || 'Something went wrong while loading the photo book.');
-        }
+        setError(e?.message || 'Something went wrong while loading the photo book.');
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
-    fetchAll();
-    return () => {
-      cancelled = true;
-    };
+    loadImages();
   }, []);
 
   const currentItem = items[pageIndex];
@@ -125,12 +250,12 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
             <div className="text-left">
               <p className="text-xs uppercase tracking-[0.3em] text-sky-100/80">Raj & Manali</p>
               <h1 className="text-2xl md:text-3xl font-bold">Photo Book of Love</h1>
-              <p className="text-sm text-sky-100/80">Every page pulls straight from the drive with a sprinkle of parenting joy.</p>
+              <p className="text-sm text-sky-100/80">Baby shower memories with parenting tips on every page.</p>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-3 text-sky-100/80">
             <span className="text-lg">✨</span>
-            <p className="text-sm font-medium">Swipe with arrows or tap the buttons to glide through memories</p>
+            <p className="text-sm font-medium">Use arrow keys or tap buttons to navigate</p>
           </div>
         </header>
 
@@ -143,7 +268,7 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
             </div>
           ) : !items.length ? (
             <div className="bg-white/10 border border-white/20 text-sky-100 px-4 py-3 rounded-2xl shadow-lg max-w-lg text-center">
-              No photos have arrived yet. Snap some moments to fill the book!
+              No photos found. Please check that images are in the public folder.
             </div>
           ) : (
             <div
@@ -163,10 +288,10 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
                 <div className="p-5 md:p-8 bg-slate-950/30 border-r border-white/10">
                   <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900/60">
                     <img
-                      src={idToViewUrl(currentItem.id)}
+                      src={currentItem.src}
                       alt={currentItem.name}
                       className="h-full w-full object-cover"
-                      loading="lazy"
+                      loading="eager"
                       decoding="async"
                     />
                     <div className="absolute top-3 right-3 bg-black/60 text-xs px-3 py-1 rounded-full border border-white/20">
@@ -176,16 +301,8 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
                   <div className="mt-4 flex items-center justify-between text-sky-100/80 text-sm">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">📖</span>
-                      <span>Flip for the sweetest tips for the newest parents.</span>
+                      <span>Flip for parenting tips on every page.</span>
                     </div>
-                    <a
-                      href={idToOpenUrl(currentItem.id)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-3 py-2 rounded-full bg-white/15 border border-white/25 text-xs font-semibold hover:bg-white/25 transition-colors"
-                    >
-                      Open in Drive
-                    </a>
                   </div>
                 </div>
 
@@ -221,7 +338,7 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
               <footer className="flex flex-col md:flex-row items-center justify-between gap-3 px-5 md:px-8 py-4 bg-black/30 border-t border-white/10 backdrop-blur">
                 <div className="flex items-center gap-2 text-sky-100/80 text-sm">
                   <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
-                  <span>All photos are streamed directly from the shared drive.</span>
+                  <span>All photos are loaded from the site.</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
