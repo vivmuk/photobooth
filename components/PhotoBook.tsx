@@ -264,7 +264,8 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
               resolve();
             };
             img.onerror = () => {
-              // Skip images that fail to load silently (no console warnings)
+              // Skip images that fail to load - they might not be deployed yet
+              // Don't add to loadedItems, just resolve to continue
               resolve();
             };
             img.src = src;
@@ -368,7 +369,9 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
             </div>
           ) : !items.length ? (
             <div className="bg-white/10 border border-white/20 text-sky-100 px-4 py-3 rounded-2xl shadow-lg max-w-lg text-center">
-              No photos found. Please check that images are in the public folder.
+              <p className="mb-2">No photos loaded yet.</p>
+              <p className="text-sm text-sky-200/80">Images are being loaded from: <code className="bg-black/30 px-2 py-1 rounded">/drive-download-20251123T234132Z-1-001/</code></p>
+              <p className="text-sm text-sky-200/80 mt-2">If images don't appear, they may still be deploying to Netlify.</p>
             </div>
           ) : (
             <div
