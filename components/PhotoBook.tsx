@@ -377,7 +377,7 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
           ) : (
             <div
               key={currentItem?.id || 'page'}
-              className="relative w-full max-w-6xl bg-white/10 border border-white/20 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden backdrop-blur-xl transition-all duration-500"
+              className="relative w-full max-w-5xl bg-white/10 border border-white/20 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden backdrop-blur-xl transition-all duration-500"
               style={{
                 transform: isTurning ? 'scale(0.99) rotate(-0.25deg)' : 'scale(1)',
                 animation: isTurning === 'forward'
@@ -388,78 +388,67 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
               }}
             >
               <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 45%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 55%, rgba(255,255,255,0.06) 100%)' }} />
-              <div className="grid md:grid-cols-2 gap-0 relative">
-                {/* Image Section - Full size, responsive to aspect ratio */}
-                <div className="p-5 md:p-8 bg-slate-950/30 border-r border-white/10 flex flex-col">
-                  <div className={`relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900/60 ${
-                    imageAspectRatio === 'landscape' ? 'aspect-video' : 'aspect-[3/4]'
-                  }`}>
+              
+              {/* Single Panel Layout */}
+              <div className="flex flex-col">
+                {/* Image Section - Full size, properly handles portrait and landscape */}
+                <div className="p-6 md:p-8 bg-slate-950/30 flex flex-col items-center justify-center min-h-[50vh]">
+                  <div className="relative w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900/60 flex items-center justify-center">
                     <img
                       src={currentItem.src}
                       alt={currentItem.name}
-                      className="w-full h-full object-contain"
+                      className="w-full h-auto max-h-[75vh] object-contain"
                       loading="eager"
                       decoding="async"
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        height: 'auto',
+                        maxWidth: '100%'
+                      }}
                     />
                     <div className="absolute top-3 right-3 bg-black/60 text-xs px-3 py-1 rounded-full border border-white/20">
                       {pageLabel}
                     </div>
                   </div>
-                  <div className="mt-4 flex items-center justify-center text-sky-100/80 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">📖</span>
-                      <span>Flip for parenting tips on every page.</span>
-                    </div>
-                  </div>
                 </div>
 
-                {/* Tip Section */}
-                <div className="p-5 md:p-8 bg-gradient-to-br from-sky-200/20 via-white/5 to-purple-200/10 text-slate-50 flex flex-col gap-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-sky-100/80">Parenting cheer</p>
-                    <h2 className="text-2xl md:text-3xl font-bold mt-1">Raj & Manali, this one's for you</h2>
-                  </div>
-                  <div className="flex items-start gap-3 bg-white/10 rounded-2xl p-4 border border-white/15 shadow-inner">
-                    <span className="text-3xl">💡</span>
+                {/* Tip Section - Simple and focused */}
+                <div className="p-6 md:p-8 bg-gradient-to-br from-sky-200/20 via-white/5 to-purple-200/10 text-slate-50">
+                  <div className="flex items-start gap-3 bg-white/10 rounded-2xl p-5 border border-white/15 shadow-inner max-w-3xl mx-auto">
+                    <span className="text-3xl flex-shrink-0">💡</span>
                     <div className="space-y-2">
                       <p className="text-lg font-semibold text-white">Tiny Tip for New Parents</p>
                       <p className="text-base text-sky-50/90 leading-relaxed">{currentItem.tip}</p>
                     </div>
                   </div>
-                  <div className="bg-white/10 rounded-xl p-3 border border-white/10 shadow-md">
-                    <p className="font-semibold text-white flex items-center gap-2"><span>🌙</span> Cozy Reminder</p>
-                    <p className="mt-1 text-sm text-sky-50/90">Slow blinks, soft lights, and whispered wishes make the best bedtime stories.</p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3 text-sky-100/80 text-sm mt-auto">
-                    <span className="inline-flex items-center gap-2 bg-white/10 border border-white/15 px-3 py-2 rounded-full"><span>🧸</span>Made for snuggles</span>
-                    <span className="inline-flex items-center gap-2 bg-white/10 border border-white/15 px-3 py-2 rounded-full"><span>🍼</span>Unique tip each page</span>
-                    <span className="inline-flex items-center gap-2 bg-white/10 border border-white/15 px-3 py-2 rounded-full"><span>🚀</span>Smooth transitions</span>
-                  </div>
                 </div>
+
+                {/* Navigation Footer */}
+                <footer className="flex flex-col md:flex-row items-center justify-between gap-3 px-6 md:px-8 py-4 bg-black/30 border-t border-white/10 backdrop-blur">
+                  <div className="flex items-center gap-2 text-sky-100/80 text-sm">
+                    <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
+                    <span>All photos are loaded from the site.</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => turnPage('backward')}
+                      className="px-4 py-2 rounded-full bg-white/15 border border-white/25 text-white font-semibold hover:bg-white/25 transition-colors"
+                    >
+                      ← Previous
+                    </button>
+                    <div className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-sm font-semibold text-white">
+                      {pageLabel}
+                    </div>
+                    <button
+                      onClick={() => turnPage('forward')}
+                      className="px-4 py-2 rounded-full bg-sky-400/80 border border-white/40 text-slate-900 font-bold shadow-lg hover:bg-sky-300 transition-colors"
+                    >
+                      Next →
+                    </button>
+                  </div>
+                </footer>
               </div>
-              <footer className="flex flex-col md:flex-row items-center justify-between gap-3 px-5 md:px-8 py-4 bg-black/30 border-t border-white/10 backdrop-blur">
-                <div className="flex items-center gap-2 text-sky-100/80 text-sm">
-                  <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
-                  <span>All photos are loaded from the site.</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => turnPage('backward')}
-                    className="px-4 py-2 rounded-full bg-white/15 border border-white/25 text-white font-semibold hover:bg-white/25 transition-colors"
-                  >
-                    ← Previous
-                  </button>
-                  <div className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-sm font-semibold text-white">
-                    {pageLabel}
-                  </div>
-                  <button
-                    onClick={() => turnPage('forward')}
-                    className="px-4 py-2 rounded-full bg-sky-400/80 border border-white/40 text-slate-900 font-bold shadow-lg hover:bg-sky-300 transition-colors"
-                  >
-                    Next →
-                  </button>
-                </div>
-              </footer>
             </div>
           )}
         </main>
