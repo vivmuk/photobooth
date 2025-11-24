@@ -237,51 +237,20 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
   }, []);
 
   useEffect(() => {
-    const loadImages = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const basePath = '/drive-download-20251123T234132Z-1-001';
-        const allImages = [COVER_IMAGE_NAME, ...IMAGE_FILENAMES.filter(name => name !== COVER_IMAGE_NAME)];
-        
-        // Preload images to verify they exist
-        const loadedItems: PhotoItem[] = [];
-        
-        for (let i = 0; i < allImages.length; i++) {
-          const filename = allImages[i];
-          const src = `${basePath}/${filename}`;
-          const img = new Image();
-          
-          await new Promise<void>((resolve) => {
-            img.onload = () => {
-              loadedItems.push({
-                id: filename,
-                name: filename.replace(/^Manali_Raj_Baby_Shower_|\.jpg$/g, '').replace(/_/g, ' '),
-                src: src,
-                tip: allTips[i] || allTips[0],
-              });
-              resolve();
-            };
-            img.onerror = () => {
-              // Skip images that fail to load - they might not be deployed yet
-              // Don't add to loadedItems, just resolve to continue
-              resolve();
-            };
-            img.src = src;
-          });
-        }
-        
-        setItems(loadedItems);
-        setPageIndex(0);
-      } catch (e: any) {
-        setError(e?.message || 'Something went wrong while loading the photo book.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadImages();
+    // Initialize items list without preloading - load images on demand
+    const basePath = '/drive-download-20251123T234132Z-1-001';
+    const allImages = [COVER_IMAGE_NAME, ...IMAGE_FILENAMES.filter(name => name !== COVER_IMAGE_NAME)];
+    
+    const initialItems: PhotoItem[] = allImages.map((filename, i) => ({
+      id: filename,
+      name: filename.replace(/^Manali_Raj_Baby_Shower_|\.jpg$/g, '').replace(/_/g, ' '),
+      src: `${basePath}/${filename}`,
+      tip: allTips[i] || allTips[0],
+    }));
+    
+    setItems(initialItems);
+    setPageIndex(0);
+    setLoading(false);
   }, [allTips]);
 
   // Get current item (must be defined before useEffect that uses it)
@@ -405,7 +374,7 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
                         src={currentItem.src}
                         alt={currentItem.name}
                         className="w-full h-auto max-h-[60vh] object-contain rounded-xl"
-                        loading="eager"
+                        loading="lazy"
                         decoding="async"
                         style={{
                           display: 'block',
@@ -422,7 +391,7 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
                   </div>
 
                   {/* Tip Section - Simple and focused */}
-                  <div className="p-4 md:p-6 bg-gradient-to-br from-sky-200/20 via-white/5 to-purple-200/10 text-slate-50">
+                  <div className="p-4 md:p-6 bg-gradient-to-br from-sky-200/20 via-white/5 to-purple-200/10 text-slate-50 pb-24 md:pb-6">
                     <div className="flex items-start gap-3 bg-white/10 rounded-2xl p-5 border border-white/15 shadow-inner">
                       <span className="text-3xl flex-shrink-0">💡</span>
                       <div className="space-y-2 flex-1">
@@ -432,12 +401,8 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
                     </div>
                   </div>
 
-                  {/* Navigation Footer - Always visible */}
-                  <footer className="sticky bottom-0 flex flex-col md:flex-row items-center justify-between gap-3 px-4 md:px-6 py-4 bg-black/40 border-t border-white/10 backdrop-blur-md">
-                    <div className="hidden md:flex items-center gap-2 text-sky-100/80 text-sm">
-                      <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
-                      <span>All photos loaded from site</span>
-                    </div>
+                  {/* Navigation Footer - Fixed at bottom, not sticky */}
+                  <footer className="flex flex-col md:flex-row items-center justify-between gap-3 px-4 md:px-6 py-4 bg-black/40 border-t border-white/10 backdrop-blur-md">
                     <div className="flex items-center gap-3 w-full md:w-auto justify-center">
                       <button
                         onClick={() => turnPage('backward')}
