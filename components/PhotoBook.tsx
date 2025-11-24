@@ -284,6 +284,9 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
     loadImages();
   }, [allTips]);
 
+  // Get current item (must be defined before useEffect that uses it)
+  const currentItem = items[pageIndex];
+
   // Detect image aspect ratio when it changes
   useEffect(() => {
     if (!currentItem) return;
@@ -293,8 +296,6 @@ const PhotoBook: React.FC<PhotoBookProps> = ({ onBack }) => {
     };
     img.src = currentItem.src;
   }, [currentItem?.src]);
-
-  const currentItem = items[pageIndex];
 
   const turnPage = useCallback(
     (direction: 'forward' | 'backward') => {
